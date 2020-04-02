@@ -66,9 +66,12 @@ def main():
         print('New Client Connected... IP: ', addr)
         try:
             if handle_new_client_authentication(client_socket):
-                command_receiver(client_socket,controls)
+                client_on = True
+                while client_on:
+                    command_receiver(client_socket,controls)
         except:
             print('Client Disconnected')
+            client_on = False
             traceback.print_exc()
 
 
