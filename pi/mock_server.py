@@ -67,6 +67,7 @@ def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((IP, PORT))
     print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
+
     while True:
         server_socket.listen(1)
         client_socket, addrs = server_socket.accept()
