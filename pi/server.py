@@ -1,6 +1,6 @@
 import socket
 import traceback
-import motor_control.py
+import motor_control
 
 HOST = '0.0.0.0'
 PORT = 7777
@@ -68,7 +68,7 @@ def main():
                 command_receiver(client_socket,controls)
         except:
             print('Client Disconnected')
-            traceback.print_tb()
+            traceback.print_exc()
 
 
 if __name__ == '__main__':
