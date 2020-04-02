@@ -11,6 +11,10 @@ def straight(controls, speed, forward):
 
 
 def turn(controls, angle, side):
+    if side:
+        side = 'RIGHT'
+    else:
+        side = 'LEFT'
     controls.turn(side, angle)
 
 
