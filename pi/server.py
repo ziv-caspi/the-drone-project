@@ -46,6 +46,7 @@ def command_receiver(client_socket):
 def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((HOST, PORT))
+    server_socket.listen(1)
     print(server_socket)
     print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
     while True:
