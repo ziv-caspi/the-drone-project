@@ -1,7 +1,7 @@
 import socket, traceback
 
 HOST = '0.0.0.0'
-PORT = 1234
+PORT = 7777
 
 FUNC_KEY = {
     'S': 'STRAIGHT',
@@ -44,21 +44,19 @@ def command_receiver(client_socket):
 
 
 def main():
-    server_socket = init_server()
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((HOST, PORT))
+    print(server_socket)
+    print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
     while True:
+        client_socket = server_socket.accept()
+        print('New Client Connected...')
         try:
-            client_socket, addrs = server_socket.accept()
-            print('New Client Connected... IP: ', addrs)
-            try:
-                if handle_new_client_authentication(client_socket):
-                    command_receiver(client_socket)
-            except:
-                print('Client Disconnected')
-                traceback.print_tb()
-
-
+            if handle_new_client_authentication(client_socket):
+                command_receiver(client_socket)
         except:
-            print('Client Connection Failed')
+            print('Client Disconnected')
+            traceback.print_tb()
 
 
 if __name__ == '__main__':
