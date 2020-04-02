@@ -80,6 +80,7 @@ class Controls:
 
         self.left_wheel.asssign_pwm(self.left_pwm)
         self.right_wheel.asssign_pwm(self.right_pwm)
+        print('Controls Initialized')
 
     def allign_direction(self, forward = None):
         if forward == None:
@@ -106,6 +107,7 @@ class Controls:
         self.speed = speed
         self.direction = forward
         self.turning = False
+        print('Straight')
 
     def stop(self, side = None):
         if side:
@@ -139,6 +141,7 @@ class Controls:
                 power = 100
             self.right_wheel.go(power)
         self.turning = True
+        print('Turn')
 
     # def drive_forward(self, duration = None, power = None):
     #

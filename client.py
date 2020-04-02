@@ -1,6 +1,8 @@
 import socket
 
-HOST = '127.0.0.1'
+PI = '192.168.10.105'
+HOME = '127.0.0.1'
+HOST = PI
 PORT = 7777
 
 
