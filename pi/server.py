@@ -53,6 +53,7 @@ def command_receiver(client_socket, controls):
     msg_len = int(client_socket.recv(2).decode())
     func, speed, direction = split_by_rcp(msg_len, client_socket)
     print(func, speed, direction)
+    func(controls, speed, direction)
 
 
 
