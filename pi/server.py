@@ -1,11 +1,22 @@
-import socket, traceback
+import socket
+import traceback
+import motor_control.py
 
 HOST = '0.0.0.0'
 PORT = 7777
 
+
+def straight(controls, speed, forward):
+    controls.straight(speed, forward)
+
+
+def turn(controls, angle, side):
+    controls.turn(side, angle)
+
+
 FUNC_KEY = {
-    'S': 'STRAIGHT',
-    'A': 'ANGLE'
+    'S': straight,
+    'T': turn
 }
 
 BOOL = {
@@ -32,26 +43,29 @@ def split_by_rcp(msg_len, client_socket):
         func_key = full_msg[0]
         full_msg = full_msg[1:]
         speed = int(full_msg[:2])
-        forward = BOOL[int(full_msg[-1])]
-        return func_key, speed, forward
+        direction = BOOL[int(full_msg[-1])]
+        return FUNC_KEY[func_key], speed, direction
     except:
         raise BufferError('Protocol Invalid')
 
 
-def command_receiver(client_socket):
+def command_receiver(client_socket, controls):
     msg_len = int(client_socket.recv(2).decode())
-    func_key, speed, forward = split_by_rcp(msg_len, client_socket)
-    print(func_key, speed, forward)
+    func, speed, direction = split_by_rcp(msg_len, client_socket)
+    print(func, speed, direction)
+
+
 
 
 def main():
+    controls = motor_control.Controls()
     server_socket = init_server()
     while True:
         client_socket, addr = server_socket.accept()
         print('New Client Connected... IP: ', addr)
         try:
             if handle_new_client_authentication(client_socket):
-                command_receiver(client_socket)
+                command_receiver(client_socket,controls)
         except:
             print('Client Disconnected')
             traceback.print_tb()

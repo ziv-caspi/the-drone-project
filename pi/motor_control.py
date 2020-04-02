@@ -1,4 +1,6 @@
-import RPi.GPIO as gpio
+from sys import platform
+if platform != 'win32':
+    import RPi.GPIO as gpio
 import time
 
 freq = 50 # 50 Hz
