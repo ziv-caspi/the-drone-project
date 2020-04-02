@@ -28,18 +28,18 @@ def handle_new_client_authentication(client_socket):
 
 def split_by_rcp(msg_len, client_socket):
     try:
-        full_msg = client_socket.recv(msg_len)
+        full_msg = client_socket.recv(msg_len).decode()
         func_key = full_msg[0]
         full_msg = full_msg[1:]
         speed = int(full_msg[:2])
-        forward = BOOL[int([-1])]
+        forward = BOOL[int(full_msg[-1])]
         return func_key, speed, forward
     except:
         raise BufferError('Protocol Invalid')
 
 
 def command_receiver(client_socket):
-    msg_len = client_socket.recv(2)
+    msg_len = int(client_socket.recv(2).decode())
     func_key, speed, forward = split_by_rcp(msg_len, client_socket)
     print(func_key, speed, forward)
 
@@ -47,8 +47,8 @@ def command_receiver(client_socket):
 def main():
     server_socket = init_server()
     while True:
-        client_socket = server_socket.accept()
-        print('New Client Connected...')
+        client_socket, addr = server_socket.accept()
+        print('New Client Connected... IP: ', addr)
         try:
             if handle_new_client_authentication(client_socket):
                 command_receiver(client_socket)
