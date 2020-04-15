@@ -75,9 +75,12 @@ def main():
             if handle_new_client_authentication(client_socket):
                 client_on = True
                 while client_on:
-                    command_receiver(client_socket,controls)
+                    try:
+                        command_receiver(client_socket,controls)
+                    except BufferError:
+                        print('Packet Not By Protocol... Still Listening')
         except:
-            print('Client Disconnected')
+            print('Client Disconnected/Failed')
             client_on = False
             traceback.print_exc()
 
