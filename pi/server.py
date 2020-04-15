@@ -77,7 +77,7 @@ def main():
                 while client_on:
                     try:
                         command_receiver(client_socket,controls)
-                    except BufferError:
+                    except (BufferError, ValueError):
                         print('Packet Not By Protocol... Still Listening')
         except:
             print('Client Disconnected/Failed')
