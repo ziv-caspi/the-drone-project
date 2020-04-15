@@ -1,3 +1,4 @@
+import numpy as np
 import socket
 import traceback
 import motor_control
@@ -5,6 +6,7 @@ import motor_control
 HOST = '0.0.0.0'
 PORT = 7777
 
+sock = socket.socket()
 
 def straight(controls, speed, forward):
     controls.straight(speed, forward)
@@ -63,8 +65,6 @@ def command_receiver(client_socket, controls):
     func(controls, speed, direction)
 
 
-
-
 def main():
     controls = motor_control.Controls()
     server_socket = init_server()
@@ -77,8 +77,9 @@ def main():
                 while client_on:
                     try:
                         command_receiver(client_socket,controls)
-                    except (BufferError, ValueError):
-                        print('Packet Not By Protocol... Still Listening')
+                    except (BufferError, ValueError) as e:
+                        # TODO: Decide on handling for bad packets... watch list? logging?
+                        print('Packet Not By Protocol... Still Listening', 'ERROR: ', e)
         except:
             print('Client Disconnected/Failed')
             client_on = False
