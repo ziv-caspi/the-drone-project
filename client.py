@@ -10,7 +10,7 @@ DOWN = 80
 LEFT = 75
 RIGHT = 77
 
-SPEED = '70'
+SPEED = '99'
 ANGLE = '50'
 
 def create_pkt():
