@@ -1,6 +1,6 @@
 import socket
 import keyboard_fly
-PI = '192.168.10.105'
+PI = '10.0.0.16'
 HOME = '127.0.0.1'
 HOST = PI
 PORT = 7777
@@ -11,7 +11,7 @@ LEFT = 75
 RIGHT = 77
 
 SPEED = '70'
-ANGLE = '30'
+ANGLE = '50'
 
 def create_pkt():
     c = ord(keyboard_fly.read_key())
