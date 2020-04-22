@@ -5,6 +5,9 @@ import motor_control
 HOST = '0.0.0.0'
 PORT = 7777
 
+class Server():
+    pass
+
 sock = socket.socket()
 
 def straight(controls, speed, forward):
