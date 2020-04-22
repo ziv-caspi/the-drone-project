@@ -69,10 +69,6 @@ class Server():
         while self.client_connected:
 
             try:
-                msg = self.client_socket.recv(1024).decode()
-                if not msg:
-                    raise ConnectionResetError('Socket Closed: Empty Message.')
-
                 self.receive_commands()
 
             except (BufferError, ValueError) as error:
@@ -82,6 +78,9 @@ class Server():
 
     def receive_commands(self):
         msg_len = int(self.client_socket.recv(2).decode())
+        if not msg_len:
+            raise ConnectionResetError('Connection Closed. Empty Message.')
+
         func, param1, param2 = self.split_by_rcp(msg_len)
         print(func, param1, param2)
         func(param1, param2)
