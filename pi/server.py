@@ -6,10 +6,54 @@ HOST = '0.0.0.0'
 PORT = 7777
 
 class Server():
-    def __init__(self):
-        pass
+    def __init__(self, HOST, PORT, CONNECTIONS):
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-sock = socket.socket()
+        self.HOST = HOST
+        self.PORT = PORT
+        self.CONNECTIONS = CONNECTIONS
+
+        self.client_socket = None
+        self.client_connected = False
+
+        self.controls = motor_control.Controls()
+
+    def initialize_server(self):
+        self.server_socket.bind((self.HOST, self.PORT))
+        self.server_socket.listen(self.CONNECTIONS)
+        print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
+
+    def admit_client(self):
+        self.client_socket, addrs = self.server_socket.accept()
+        print('New Client Connected... IP: ', addrs)
+
+        try:
+            if self.client_authentication():
+                self.client_connected = True
+                self.serve_client()
+
+        except (ConnectionResetError, ConnectionAbortedError) as error:
+            print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs))
+            print('ERROR', error)
+            traceback.print_exc()
+
+    def client_authentication(self):
+        return True
+
+    def serve_client(self):
+        while self.client_connected:
+
+            try:
+                msg = self.client_socket.recv(1024)
+                print(msg)
+
+            except (BufferError, ValueError) as error:
+                # TODO: Decide on handling for bad packets... watch list? logging?
+                print('Packet Not By Protocol. ERROR:', error)
+                traceback.print_exc()
+
+
+# sock = socket.socket()
 
 def straight(controls, speed, forward):
     controls.straight(speed, forward)
