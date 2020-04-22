@@ -2,7 +2,7 @@ import socket
 import keyboard_fly
 PI = '10.0.0.16'
 HOME = '127.0.0.1'
-HOST = PI
+HOST = HOME
 PORT = 7777
 
 UP = 72
