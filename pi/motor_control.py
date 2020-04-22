@@ -1,22 +1,31 @@
-import RPi.GPIO as gpio
+from sys import platform
+if platform != 'win32':
+    import RPi.GPIO as gpio
+    platform = True
+else:
+    platform = False
 import time
 
 freq = 50 # 50 Hz
 proportions = 1.11111111111
 class Board:
     def __init__(self, left_wheel, right_wheel):
+        self.left_pwm = None
+        self.right_pwm = None
 
-        gpio.setmode(gpio.BOARD)
-        gpio.setup(left_wheel.power_pin, gpio.OUT)
-        gpio.setup(left_wheel.direction_pin, gpio.OUT)
-        gpio.setup(right_wheel.power_pin, gpio.OUT)
-        gpio.setup(right_wheel.direction_pin, gpio.OUT)
+        if platform:
 
-        self.left_pwm = gpio.PWM(left_wheel.power_pin, freq)
-        self.right_pwm = gpio.PWM(right_wheel.power_pin, freq)
+            gpio.setmode(gpio.BOARD)
+            gpio.setup(left_wheel.power_pin, gpio.OUT)
+            gpio.setup(left_wheel.direction_pin, gpio.OUT)
+            gpio.setup(right_wheel.power_pin, gpio.OUT)
+            gpio.setup(right_wheel.direction_pin, gpio.OUT)
 
-        self.left_pwm.start(0)
-        self.right_pwm.start(0)
+            self.left_pwm = gpio.PWM(left_wheel.power_pin, freq)
+            self.right_pwm = gpio.PWM(right_wheel.power_pin, freq)
+
+            self.left_pwm.start(0)
+            self.right_pwm.start(0)
 
 class Wheel:
     def __init__(self, side):
@@ -34,7 +43,8 @@ class Wheel:
         self.pwm = pwm
 
     def set_direction(self, forward):
-        gpio.output(self.direction_pin, forward)
+        if platform:
+            gpio.output(self.direction_pin, forward)
         self.forward = forward
 
     def go(self, power = 100):
@@ -70,6 +80,7 @@ class Controls:
 
         self.left_wheel.asssign_pwm(self.left_pwm)
         self.right_wheel.asssign_pwm(self.right_pwm)
+        print('Controls Initialized')
 
     def allign_direction(self, forward = None):
         if forward == None:
@@ -96,6 +107,7 @@ class Controls:
         self.speed = speed
         self.direction = forward
         self.turning = False
+        print('Straight')
 
     def stop(self, side = None):
         if side:
@@ -129,6 +141,7 @@ class Controls:
                 power = 100
             self.right_wheel.go(power)
         self.turning = True
+        print('Turn')
 
     # def drive_forward(self, duration = None, power = None):
     #
