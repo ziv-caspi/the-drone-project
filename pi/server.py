@@ -6,7 +6,8 @@ HOST = '0.0.0.0'
 PORT = 7777
 
 class Server():
-    pass
+    def __init__(self):
+        pass
 
 sock = socket.socket()
 
