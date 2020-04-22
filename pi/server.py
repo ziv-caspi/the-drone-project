@@ -22,10 +22,13 @@ def turn(controls, angle, side):
         print(side)
     controls.turn(side, angle)
 
+def breaks(controls):
+    controls.stop()
 
 FUNC_KEY = {
     'S': straight,
-    'T': turn
+    'T': turn,
+    'B': breaks
 }
 
 BOOL = {

@@ -29,7 +29,8 @@ def create_pkt():
         pkt = 'T' + ANGLE + '0'
 
     elif c == 32:
-        pass
+        print('space')
+        pkt = 'B' + '000'
 
     else:
         pass
