@@ -22,7 +22,7 @@ def turn(controls, angle, side):
         print(side)
     controls.turn(side, angle)
 
-def breaks(controls):
+def breaks(controls, *args):
     controls.stop()
 
 FUNC_KEY = {
