@@ -61,6 +61,7 @@ class Server():
             print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs), error)
             self.client_socket.close()
             self.client_connected = False
+            self.controls.stop()
             traceback.print_exc()
 
     def client_authentication(self):
