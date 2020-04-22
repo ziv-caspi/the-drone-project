@@ -1,4 +1,3 @@
-import numpy as np
 import socket
 import traceback
 import motor_control
