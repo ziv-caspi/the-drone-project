@@ -159,5 +159,5 @@ class Server():
 
 
 if __name__ == '__main__':
-    server = Server(HOST, PORT, 1, 5)
+    server = Server(HOST, PORT, 0, 5)
     server.start()
