@@ -52,22 +52,21 @@ class Server():
     def initialize_server(self):
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT))
-        self.server_socket.listen(0)
+        self.server_socket.listen(3)
         print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
 
     def admit_client(self):
         self.client_socket, addrs = self.server_socket.accept()
 
         try:
-            self.verify_client_hold_list(addrs)
-            print('New Client Connected... IP:', addrs)
-
-            if self.client_authentication():
+            if self.verify_client_hold_list_and_password(addrs):
+                print('New Client Connected... IP:', addrs)
                 self.client_connected = True
+                self.add_to_wrong_password_list(addrs, True)
                 print('Correct Password, Welcome!')
                 self.serve_client()
             else:
-                self.add_to_wrong_password_list(addrs)
+                self.add_to_wrong_password_list(addrs, False)
 
 
         except (ConnectionAbortedError, ConnectionResetError, ConnectionRefusedError) as error:
@@ -126,36 +125,59 @@ class Server():
             password_hash = file.read()
             return password_hash == encoded
 
-    def verify_client_hold_list(self, addrs):
+    def verify_client_hold_list_and_password(self, addrs):
         for holder in self.on_hold_list:
-            if holder[0] == addrs[0]:
-                print('Hold List Detected: {0}.'.format(holder[0]))
+            ip = holder[0]
+            start_time = holder[1]
+            required_hold_time = holder[2]
+            if ip == addrs[0]:
                 cur_time = time.time()
-                diff = cur_time - holder[1]
-                if diff > self.HOLD_DURATION:
-                    self.on_hold_list.remove(holder)
-                    for wrong_password_ip in self.wrong_password_ip_list:
-                        if holder[0] == wrong_password_ip[0][0]:
-                            self.wrong_password_ip_list.remove(wrong_password_ip)
+                diff = cur_time - start_time
+                if diff > required_hold_time:
+                    if self.client_authentication():
+                        self.on_hold_list.remove(holder)
+                        return True
+                    # for wrong_password_ip in self.wrong_password_ip_list:
+                    #     if holder[0] == wrong_password_ip[0][0]:
+                    #         self.wrong_password_ip_list.remove(wrong_password_ip)
                 else:
-                    print('Client On Hold For {0} More Seconds'.format(self.HOLD_DURATION - diff))
+                    print('Client{0} On Hold For {1} More Seconds'.format(addrs, required_hold_time - diff))
                     raise ConnectionRefusedError('Client is On hold list.')
+        return self.client_authentication()
 
-    def add_to_wrong_password_list(self, addrs):
-        for index in range(len(self.wrong_password_ip_list)):
-            if self.wrong_password_ip_list[index][0][0] == addrs[0]:
-                self.wrong_password_ip_list[index] = (
-                self.wrong_password_ip_list[index][0], self.wrong_password_ip_list[index][1] + 1)
-                print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[index][1])
-                if self.wrong_password_ip_list[index][1] >= 3:
-                    print('Putting Client On Hold for {0} Seconds.'.format(self.HOLD_DURATION))
-                    self.on_hold_list.append((self.wrong_password_ip_list[index][0][0], time.time()))
+    def add_to_wrong_password_list(self, addrs, correct_password):
+        if not correct_password:
+            for index in range(len(self.wrong_password_ip_list)):
+                member = self.wrong_password_ip_list[index]
+                member_addrs = member[0]
+                wrong_attempt_counter = member[1]
 
-                raise ConnectionAbortedError('Wrong Password')
+                if member_addrs[0] == addrs[0]:
+                    self.wrong_password_ip_list[index] = (
+                    member_addrs, wrong_attempt_counter + 1)
+                    wrong_attempt_counter += 1
+                    print('Wrong Attempt from this IP: ', wrong_attempt_counter)
 
-        self.wrong_password_ip_list.append((addrs, 1))
-        print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
-        raise ConnectionAbortedError('Wrong Password')
+                    if wrong_attempt_counter >= 3:
+                        hold =  self.HOLD_DURATION ** (wrong_attempt_counter -2)
+                        print('Putting Client On Hold for {0} Seconds.'.format(hold))
+
+                        list = [index for index in range(len(self.on_hold_list)) if self.on_hold_list[index][0] == member_addrs[0]]
+                        print(list, self.on_hold_list)
+                        if len(list) > 0:
+                            self.on_hold_list[index] = (self.on_hold_list[index][0], self.on_hold_list[index][1], hold)
+
+                        else:
+                            self.on_hold_list.append((member_addrs[0], time.time(), self.HOLD_DURATION))
+    
+                    raise ConnectionAbortedError('Wrong Password')
+    
+            self.wrong_password_ip_list.append((addrs, 1))
+            print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
+            raise ConnectionAbortedError('Wrong Password')
+        for ip in self.wrong_password_ip_list:
+            if ip[0][0] == addrs[0]:
+                self.wrong_password_ip_list.remove(ip)
 
 
 if __name__ == '__main__':
