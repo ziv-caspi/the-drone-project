@@ -52,7 +52,7 @@ class Server():
     def initialize_server(self):
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.HOST, self.PORT))
-        self.server_socket.listen(self.CONNECTIONS)
+        self.server_socket.listen(0)
         print('Remote Control Server is UP! \n WARNING! THIS SERVER IS NOT SECURE!')
 
     def admit_client(self):
