@@ -61,9 +61,9 @@ class Server():
                 print('Correct Password')
                 self.serve_client()
             else:
-                for ip in self.wrong_password_ip_list:
+                for index, ip in enumerate(self.wrong_password_ip_list):
                     if ip[0][0] == addrs[0]:
-                        ip[1] += 1
+                        self.wrong_password_ip_list[index] = (ip[0], ip[1]+1)
                         print(self.wrong_password_ip_list)
                         raise ConnectionAbortedError('Wrong Password')
 
@@ -75,14 +75,13 @@ class Server():
             print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs), error)
             self.client_socket.close()
             self.client_connected = False
-            self.controls.stop()
+            # self.controls.stop()
             traceback.print_exc()
 
     def client_authentication(self):
         try:
             msg_len = int(self.client_socket.recv(2).decode())
             password = self.client_socket.recv(msg_len)
-            print(password)
             return self.check_password(password)
 
         except:
