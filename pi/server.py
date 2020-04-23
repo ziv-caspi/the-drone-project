@@ -1,22 +1,26 @@
 import socket
 import hashlib, base64
 import traceback
+import time
 import motor_control
 
 HOST = '0.0.0.0'
 PORT = 7777
 
 class Server():
-    def __init__(self, HOST, PORT, CONNECTIONS):
+    def __init__(self, HOST, PORT, CONNECTIONS, HOLD_DURATION):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.HOST = HOST
         self.PORT = PORT
         self.CONNECTIONS = CONNECTIONS
+        self.HOLD_DURATION = HOLD_DURATION
+
 
         self.client_socket = None
         self.client_connected = False
         self.wrong_password_ip_list = []
+        self.on_hold_list = []
 
         self.controls = motor_control.Controls()
 
@@ -53,25 +57,32 @@ class Server():
 
     def admit_client(self):
         self.client_socket, addrs = self.server_socket.accept()
-        print('New Client Connected... IP: ', addrs)
 
         try:
+            if self.check_hold_list(addrs):
+                pass
+            print('New Client Connected... IP:', addrs)
+
             if self.client_authentication():
                 self.client_connected = True
-                print('Correct Password')
+                print('Correct Password, Welcome!')
                 self.serve_client()
             else:
-                for index, ip in enumerate(self.wrong_password_ip_list):
-                    if ip[0][0] == addrs[0]:
-                        self.wrong_password_ip_list[index] = (ip[0], ip[1]+1)
-                        print(self.wrong_password_ip_list)
+                for index in range(len(self.wrong_password_ip_list)):
+                    if self.wrong_password_ip_list[index][0][0] == addrs[0]:
+                        self.wrong_password_ip_list[index] = (self.wrong_password_ip_list[index][0], self.wrong_password_ip_list[index][1]+1)
+                        print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[index][1])
+                        if self.wrong_password_ip_list[index][1] >= 3:
+                            print('Putting Client On Hold for {0} Seconds.'.format(self.HOLD_DURATION))
+                            self.on_hold_list.append((self.wrong_password_ip_list[index][0][0], time.time()))
+
                         raise ConnectionAbortedError('Wrong Password')
 
                 self.wrong_password_ip_list.append((addrs, 1))
-                print(self.wrong_password_ip_list)
+                print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
                 raise ConnectionAbortedError('Wrong Password')
 
-        except (ConnectionAbortedError, ConnectionResetError) as error:
+        except (ConnectionAbortedError, ConnectionResetError, ConnectionRefusedError) as error:
             print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs), error)
             self.client_socket.close()
             self.client_connected = False
@@ -127,7 +138,23 @@ class Server():
             password_hash = file.read()
             return password_hash == encoded
 
+    def check_hold_list(self, addrs):
+        for holder in self.on_hold_list:
+            if holder[0] == addrs[0]:
+                print('Hold List Detected: {0}.'.format(holder[0]))
+                cur_time = time.time()
+                diff = cur_time - holder[1]
+                if diff > self.HOLD_DURATION:
+                    self.on_hold_list.remove(holder)
+                    for wrong_password_ip in self.wrong_password_ip_list:
+                        if holder[0] == wrong_password_ip[0][0]:
+                            self.wrong_password_ip_list.remove(wrong_password_ip)
+                else:
+                    print('Client On Hold For {0} More Seconds'.format(self.HOLD_DURATION - diff))
+                    raise ConnectionRefusedError('Client is On hold list.')
+
+
 
 if __name__ == '__main__':
-    server = Server(HOST, PORT, 1)
+    server = Server(HOST, PORT, 1, 5)
     server.start()
