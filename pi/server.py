@@ -59,8 +59,7 @@ class Server():
         self.client_socket, addrs = self.server_socket.accept()
 
         try:
-            if self.check_hold_list(addrs):
-                pass
+            self.verify_client_hold_list(addrs)
             print('New Client Connected... IP:', addrs)
 
             if self.client_authentication():
@@ -68,19 +67,8 @@ class Server():
                 print('Correct Password, Welcome!')
                 self.serve_client()
             else:
-                for index in range(len(self.wrong_password_ip_list)):
-                    if self.wrong_password_ip_list[index][0][0] == addrs[0]:
-                        self.wrong_password_ip_list[index] = (self.wrong_password_ip_list[index][0], self.wrong_password_ip_list[index][1]+1)
-                        print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[index][1])
-                        if self.wrong_password_ip_list[index][1] >= 3:
-                            print('Putting Client On Hold for {0} Seconds.'.format(self.HOLD_DURATION))
-                            self.on_hold_list.append((self.wrong_password_ip_list[index][0][0], time.time()))
+                self.add_to_wrong_password_list(addrs)
 
-                        raise ConnectionAbortedError('Wrong Password')
-
-                self.wrong_password_ip_list.append((addrs, 1))
-                print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
-                raise ConnectionAbortedError('Wrong Password')
 
         except (ConnectionAbortedError, ConnectionResetError, ConnectionRefusedError) as error:
             print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs), error)
@@ -138,7 +126,7 @@ class Server():
             password_hash = file.read()
             return password_hash == encoded
 
-    def check_hold_list(self, addrs):
+    def verify_client_hold_list(self, addrs):
         for holder in self.on_hold_list:
             if holder[0] == addrs[0]:
                 print('Hold List Detected: {0}.'.format(holder[0]))
@@ -153,6 +141,21 @@ class Server():
                     print('Client On Hold For {0} More Seconds'.format(self.HOLD_DURATION - diff))
                     raise ConnectionRefusedError('Client is On hold list.')
 
+    def add_to_wrong_password_list(self, addrs):
+        for index in range(len(self.wrong_password_ip_list)):
+            if self.wrong_password_ip_list[index][0][0] == addrs[0]:
+                self.wrong_password_ip_list[index] = (
+                self.wrong_password_ip_list[index][0], self.wrong_password_ip_list[index][1] + 1)
+                print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[index][1])
+                if self.wrong_password_ip_list[index][1] >= 3:
+                    print('Putting Client On Hold for {0} Seconds.'.format(self.HOLD_DURATION))
+                    self.on_hold_list.append((self.wrong_password_ip_list[index][0][0], time.time()))
+
+                raise ConnectionAbortedError('Wrong Password')
+
+        self.wrong_password_ip_list.append((addrs, 1))
+        print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
+        raise ConnectionAbortedError('Wrong Password')
 
 
 if __name__ == '__main__':
