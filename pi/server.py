@@ -1,4 +1,5 @@
 import socket
+import hashlib, base64
 import traceback
 import motor_control
 
@@ -57,6 +58,8 @@ class Server():
             if self.client_authentication():
                 self.client_connected = True
                 self.serve_client()
+            else:
+                raise ConnectionAbortedError('Wrong Password')
 
         except (ConnectionAbortedError, ConnectionResetError) as error:
             print('Connection with {0} Was Aborted. Listening For New Client...'.format(addrs), error)
@@ -66,7 +69,13 @@ class Server():
             traceback.print_exc()
 
     def client_authentication(self):
-        return True
+        try:
+            msg_len = int(self.client_socket.recv(2).decode())
+            password = self.client_socket.recv(msg_len)
+            return self.check_password(password)
+
+        except:
+            return False
 
     def serve_client(self):
         while self.client_connected:
@@ -98,6 +107,15 @@ class Server():
             return self.FUNC_KEY[func_key], speed, direction
         except:
             raise BufferError('Protocol Invalid')
+
+    def check_password(self, password):
+        m = hashlib.sha256()
+        m.update(password)
+        hashed = m.digest()
+        encoded = base64.b64encode(hashed)
+        with open('hashed_password.txt', 'rb') as file:
+            password_hash = file.read()
+            return password_hash == encoded
 
 
 if __name__ == '__main__':
