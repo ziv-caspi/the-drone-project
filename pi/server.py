@@ -57,6 +57,7 @@ class Server():
         try:
             if self.client_authentication():
                 self.client_connected = True
+                print('Correct Password')
                 self.serve_client()
             else:
                 raise ConnectionAbortedError('Wrong Password')
@@ -72,6 +73,7 @@ class Server():
         try:
             msg_len = int(self.client_socket.recv(2).decode())
             password = self.client_socket.recv(msg_len)
+            print(password)
             return self.check_password(password)
 
         except:

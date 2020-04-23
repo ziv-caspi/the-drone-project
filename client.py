@@ -41,6 +41,8 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(sock)
     sock.connect((HOST, PORT))
+    password = input('PASSWORD: ')
+    sock.send((str(len(password)).zfill(2) + password).encode())
     while True:
         pkt = create_pkt()
         if pkt != '' and pkt != '00':
