@@ -62,12 +62,12 @@ class Server():
                 self.serve_client()
             else:
                 for ip in self.wrong_password_ip_list:
-                    if ip[0] == addrs:
+                    if ip[0][0] == addrs:
                         ip[1] += 1
                         print(self.wrong_password_ip_list)
                         raise ConnectionAbortedError('Wrong Password')
 
-                self.wrong_password_ip_list.append((addrs, 0))
+                self.wrong_password_ip_list.append((addrs, 1))
                 print(self.wrong_password_ip_list)
                 raise ConnectionAbortedError('Wrong Password')
 
