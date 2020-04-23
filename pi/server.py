@@ -16,6 +16,7 @@ class Server():
 
         self.client_socket = None
         self.client_connected = False
+        self.wrong_password_ip_list = []
 
         self.controls = motor_control.Controls()
 
@@ -60,6 +61,14 @@ class Server():
                 print('Correct Password')
                 self.serve_client()
             else:
+                for ip in self.wrong_password_ip_list:
+                    if ip[0] == addrs:
+                        ip[1] += 1
+                        print(self.wrong_password_ip_list)
+                        raise ConnectionAbortedError('Wrong Password')
+
+                self.wrong_password_ip_list.append((addrs, 0))
+                print(self.wrong_password_ip_list)
                 raise ConnectionAbortedError('Wrong Password')
 
         except (ConnectionAbortedError, ConnectionResetError) as error:
