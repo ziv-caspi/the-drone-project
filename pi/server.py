@@ -62,11 +62,11 @@ class Server():
             if self.verify_client_hold_list_and_password(addrs):
                 print('New Client Connected... IP:', addrs)
                 self.client_connected = True
-                self.add_to_wrong_password_list(addrs, True)
+                self.handle_password_attempt(addrs, True)
                 print('Correct Password, Welcome!')
                 self.serve_client()
             else:
-                self.add_to_wrong_password_list(addrs, False)
+                self.handle_password_attempt(addrs, False)
 
 
         except (ConnectionAbortedError, ConnectionResetError, ConnectionRefusedError) as error:
@@ -145,39 +145,49 @@ class Server():
                     raise ConnectionRefusedError('Client is On hold list.')
         return self.client_authentication()
 
-    def add_to_wrong_password_list(self, addrs, correct_password):
-        if not correct_password:
-            for index in range(len(self.wrong_password_ip_list)):
-                member = self.wrong_password_ip_list[index]
-                member_addrs = member[0]
-                wrong_attempt_counter = member[1]
+    def wrong_password(self, addrs):
+        for index in range(len(self.wrong_password_ip_list)):
+            member = self.wrong_password_ip_list[index]
+            member_addrs = member[0]
+            wrong_attempt_counter = member[1]
 
-                if member_addrs[0] == addrs[0]:
-                    self.wrong_password_ip_list[index] = (
+            if member_addrs[0] == addrs[0]:
+                self.wrong_password_ip_list[index] = (
                     member_addrs, wrong_attempt_counter + 1)
-                    wrong_attempt_counter += 1
-                    print('Wrong Attempt from this IP: ', wrong_attempt_counter)
+                wrong_attempt_counter += 1
+                print('Wrong Attempt from this IP: ', wrong_attempt_counter)
 
-                    if wrong_attempt_counter >= 3:
-                        hold =  self.HOLD_DURATION ** (wrong_attempt_counter -2)
-                        print('Putting Client On Hold for {0} Seconds.'.format(hold))
+                if wrong_attempt_counter >= 3:
+                    hold = self.HOLD_DURATION ** (wrong_attempt_counter - 2)
+                    print('Putting Client On Hold for {0} Seconds.'.format(hold))
 
-                        list = [index for index in range(len(self.on_hold_list)) if self.on_hold_list[index][0] == member_addrs[0]]
-                        print(list, self.on_hold_list)
-                        if len(list) > 0:
-                            self.on_hold_list[index] = (self.on_hold_list[index][0], self.on_hold_list[index][1], hold)
+                    list = [index for index in range(len(self.on_hold_list)) if
+                            self.on_hold_list[index][0] == member_addrs[0]]
+                    print(list, self.on_hold_list)
+                    if len(list) > 0:
+                        self.on_hold_list[index] = (self.on_hold_list[index][0], self.on_hold_list[index][1], hold)
 
-                        else:
-                            self.on_hold_list.append((member_addrs[0], time.time(), self.HOLD_DURATION))
-    
-                    raise ConnectionAbortedError('Wrong Password')
-    
-            self.wrong_password_ip_list.append((addrs, 1))
-            print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
-            raise ConnectionAbortedError('Wrong Password')
+                    else:
+                        self.on_hold_list.append((member_addrs[0], time.time(), self.HOLD_DURATION))
+
+                raise ConnectionAbortedError('Wrong Password')
+
+        self.wrong_password_ip_list.append((addrs, 1))
+        print('Wrong Attempt from this IP: ', self.wrong_password_ip_list[0][1])
+        raise ConnectionAbortedError('Wrong Password')
+
+    def correct_password(self, addrs):
         for ip in self.wrong_password_ip_list:
             if ip[0][0] == addrs[0]:
                 self.wrong_password_ip_list.remove(ip)
+
+    def handle_password_attempt(self, addrs, correct_password):
+        if not correct_password:
+            self.wrong_password(addrs)
+
+        self.correct_password(addrs)
+
+
 
 
 if __name__ == '__main__':
