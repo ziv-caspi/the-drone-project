@@ -71,6 +71,7 @@ class Security():
                     if self.client_authentication(client_socket):
                         self.on_hold_list.remove(holder)
                         return True
+                    return False
                     # for wrong_password_ip in self.wrong_password_ip_list:
                     #     if holder[0] == wrong_password_ip[0][0]:
                     #         self.wrong_password_ip_list.remove(wrong_password_ip)

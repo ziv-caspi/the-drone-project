@@ -8,6 +8,7 @@ import security
 HOST = '0.0.0.0'
 PORT = 7777
 
+
 class Server():
     def __init__(self, HOST, PORT, CONNECTIONS, HOLD_DURATION):
         self.Security = security.Security(HOLD_DURATION)
