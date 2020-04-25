@@ -1,0 +1,2 @@
+class Security():
+    pass
