@@ -2,7 +2,7 @@ import socket
 import keyboard_fly
 PI = '10.0.0.16'
 HOME = '127.0.0.1'
-HOST = PI
+HOST = HOME
 PORT = 7777
 
 UP = 72
@@ -41,6 +41,8 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(sock)
     sock.connect((HOST, PORT))
+    password = input('PASSWORD: ')
+    sock.send((str(len(password)).zfill(2) + password).encode())
     while True:
         pkt = create_pkt()
         if pkt != '' and pkt != '00':
