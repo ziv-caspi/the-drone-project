@@ -93,19 +93,28 @@ class Security():
             return False
 
     class Encryption():
-        def __init__(self):
+        def __init__(self, encrypted_session_key, nonce):
             self.public_key = RSA.import_key(open('receiver.pem', 'rb').read())
             self.private_key = RSA.import_key(open('private.pem', 'rb').read())
-            self.session_key = None
+            self.session_key = self.decrypt_session_key(encrypted_session_key)
+            self.cipher_aes = self.init_session_cipher(nonce)
 
         def decrypt_session_key(self, encrypted_session_key):
             cipher_rsa = PKCS1_OAEP.new(self.private_key)
             session_key = cipher_rsa.decrypt(encrypted_session_key)
             return session_key
 
-        def decrypt_session_text(self, nonce, tag, ciphertext):
-            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, nonce)
-            data = cipher_aes.decrypt_and_verify(ciphertext, tag)
+        def init_session_cipher(self, nonce):
+            return AES.new(self.session_key, AES.MODE_EAX, nonce)
+
+        def decrypt_session_text(self, tag, ciphertext):
+            data = self.cipher_aes.decrypt_and_verify(ciphertext, tag)
             return data.decode()
+
+        def encrypt_session_text(self, plaintext):
+            ciphertext, tag = self.cipher_aes.encrypt_and_digest(plaintext)
+            return ciphertext, tag
+
+
 
 
