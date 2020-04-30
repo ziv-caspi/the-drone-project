@@ -92,9 +92,15 @@ class Server():
                 traceback.print_exc()
 
     def receive_commands(self):
-        msg_len = int(self.client_socket.recv(2).decode())
-        if not msg_len:
-            raise ConnectionResetError('Connection Closed. Empty Message.')
+        msg_len = ''
+        try:
+            msg_len = int(self.client_socket.recv(2).decode())
+            if not msg_len:
+                raise ConnectionResetError('Connection Closed. Empty Message.')
+        except:
+            if not msg_len:
+                raise ConnectionResetError('Connection Closed. Empty Message.')
+            raise BufferError
 
         func, param1, param2 = self.split_by_rcp(msg_len)
         print(func, param1, param2)

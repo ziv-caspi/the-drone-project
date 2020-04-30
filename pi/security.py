@@ -1,7 +1,9 @@
 import hashlib
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Random import get_random_bytes
+from Cryptodome.Cipher import AES, PKCS1_OAEP
 import base64
 import time
-import token
 
 class Security():
     def __init__(self, HOLD_DURATION):
@@ -89,3 +91,21 @@ class Security():
 
         except:
             return False
+
+    class Encryption():
+        def __init__(self):
+            self.public_key = RSA.import_key(open('receiver.pem', 'rb').read())
+            self.private_key = RSA.import_key(open('private.pem', 'rb').read())
+            self.session_key = None
+
+        def decrypt_session_key(self, encrypted_session_key):
+            cipher_rsa = PKCS1_OAEP.new(self.private_key)
+            session_key = cipher_rsa.decrypt(encrypted_session_key)
+            return session_key
+
+        def decrypt_session_text(self, nonce, tag, ciphertext):
+            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, nonce)
+            data = cipher_aes.decrypt_and_verify(ciphertext, tag)
+            return data.decode()
+
+
