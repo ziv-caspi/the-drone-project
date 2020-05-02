@@ -15,7 +15,7 @@ def main():
         command = input('Command:')
         client_socket.sendto(b'04', addrs)
         client_socket.sendto(b'SALT', addrs)
-        salt = client_socket.recv(1024)
+        salt = client_socket.recv(1024).decode()
         m = hashlib.sha256()
         m.update((password + salt + command).encode())
         hsh = m.digest()
