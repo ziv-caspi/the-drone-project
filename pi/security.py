@@ -97,22 +97,30 @@ class Security():
             self.public_key = RSA.import_key(open('receiver.pem', 'rb').read())
             self.private_key = RSA.import_key(open('private.pem', 'rb').read())
             self.session_key = self.decrypt_session_key(encrypted_session_key)
-            self.cipher_aes = self.init_session_cipher(nonce)
+            self.nonce = nonce
 
         def decrypt_session_key(self, encrypted_session_key):
             cipher_rsa = PKCS1_OAEP.new(self.private_key)
             session_key = cipher_rsa.decrypt(encrypted_session_key)
             return session_key
 
-        def init_session_cipher(self, nonce):
-            return AES.new(self.session_key, AES.MODE_EAX, nonce)
+        def re_init_session_cipher(self, nonce, encrypted_session_key):
+            self.session_key = self.decrypt_session_key(encrypted_session_key)
+            self.nonce = nonce
 
         def decrypt_session_text(self, tag, ciphertext):
-            data = self.cipher_aes.decrypt_and_verify(ciphertext, tag)
-            return data.decode()
+            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, self.nonce)
+            try:
+                data = cipher_aes.decrypt_and_verify(ciphertext, tag)
+                return data.decode()
+            except ValueError:
+                print('Bad Encryption Key')
+                return None
+
 
         def encrypt_session_text(self, plaintext):
-            ciphertext, tag = self.cipher_aes.encrypt_and_digest(plaintext)
+            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, self.nonce)
+            ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext)
             return ciphertext, tag
 
 
