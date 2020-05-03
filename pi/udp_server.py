@@ -1,10 +1,14 @@
 import socket
 import random
 import hashlib
+import motor_control
+
 
 class Server():
     def __init__(self, PORT, PASSWORD):
         self.PASSWORD = PASSWORD
+
+        self.controls = motor_control.Controls()
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_socket.bind(('127.0.0.1', PORT))
@@ -27,11 +31,11 @@ class Server():
         }
 
     def straight(self, speed, forward):
-        # self.controls.straight(speed, forward)
+        self.controls.straight(speed, forward)
         print('Straight', speed, forward)
 
     def turn(self, side, angle):
-        # self.controls.turn(side, angle)
+        self.controls.turn(side, angle)
         print('Turn', side, angle)
 
     def gen_new_salt(self):
