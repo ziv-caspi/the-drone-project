@@ -164,3 +164,6 @@ class Controls:
     #         time.sleep(duration)
     #         self.left_wheel.drive(False)
     #         self.right_wheel.drive(False)
+
+if __name__ == '__main__':
+    controls = Controls()
