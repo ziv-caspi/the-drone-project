@@ -58,11 +58,11 @@ class Server():
             msg_len, addrs = self.server_socket.recvfrom(2)
             msg = self.server_socket.recv(int(msg_len))
             print(msg, 'From:', addrs)
-            # self.server_socket.sendto(msg.encode(), addrs)
             if msg == b'SALT':
                 self.send_salt_to_addrs(addrs)
-            else:
-                self.check_hash_for_commands(msg)
+                return
+
+            self.check_hash_for_commands(msg)
 
         except (BufferError, ValueError, OSError) as error:
             print('Packet From {0} Not By Protocol, Discarding'.format(addrs))

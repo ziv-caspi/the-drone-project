@@ -1,7 +1,9 @@
 import socket
 import hashlib
 
-HOST = '127.0.0.1'
+HOME = '127.0.0.1'
+PI = '10.0.0.16'
+HOST = PI
 PORT = 7777
 
 def main():
