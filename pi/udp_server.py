@@ -72,11 +72,17 @@ class Server():
             self.check_hash_for_commands(msg)
 
         except (BufferError, ValueError, OSError) as error:
-            print('Packet From {0} Not By Protocol, Discarding'.format(addrs))
+            try:
+                print('Packet From {0} Not By Protocol, Discarding'.format(addrs))
+            except:
+                print('Packet Not By Protocol, Discarding')
 
         except PermissionError as error:
-            print(error, addrs)
-            self.last_ip_wrong = addrs[0]
+            try:
+                print(error, addrs)
+                self.last_ip_wrong = addrs[0]
+            except:
+                print(error)
 
     def calc_hash(self, string):
         m = hashlib.sha256()
