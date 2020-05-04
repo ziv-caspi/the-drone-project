@@ -3,7 +3,7 @@ import random
 import hashlib
 import motor_control
 import time
-
+import logging
 
 class Server():
     def __init__(self, PORT, PASSWORD):
@@ -33,6 +33,7 @@ class Server():
         }
 
         self.last_ip_wrong = None
+
 
     def straight(self, speed, forward):
         self.controls.straight(speed, forward)
@@ -113,6 +114,37 @@ class Server():
             function(param1, param2)
         except:
             raise ValueError
+
+class Security():
+    class Endpoint():
+        def __init__(self, ip):
+            self.ip = ip
+            self.time = time.time()
+            self.recent_requests = []
+            self.valid_requests_count = 0
+            self.invalid_requests_count = 0
+
+    def __init__(self):
+        logging.basicConfig(filename='logs/suspicious_activity.log', level=logging.WARNING)
+        self.active_endpoints = []
+
+    def new_ip_connected(self, ip):
+        self.active_endpoints.append(self.Endpoint(ip))
+
+    def get_index_of_endpoint(self, ip):
+        for i, endpoint in enumerate(self.active_endpoints):
+            if endpoint.ip == ip:
+                return i
+
+    def new_request_from_ip(self, ip, request, valid):
+        endpoint = self.active_endpoints[self.get_index_of_endpoint(ip)]
+        if valid:
+            endpoint.valid_requests_count += 1
+        else:
+            endpoint.invalid_requests_count += 1
+
+        endpoint.recent_requests.append(request)
+
 
 
 def main():
