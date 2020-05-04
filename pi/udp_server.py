@@ -20,7 +20,7 @@ class Server():
         self.salt = str(random.randint(0, self.RANDOM_LIMIT))
         self.used_salts = [self.salt]
         
-        self.COMMANDS = ['S991', 'S990', 'T991', 'T990']
+        self.COMMANDS = ['S991', 'S990', 'T991', 'T990', 'B000']
         
         self.PROTOCOL = {
             'SALT': self.send_salt_to_addrs
@@ -28,7 +28,8 @@ class Server():
 
         self.FUNCTIONS = {
             'S': self.straight,
-            'T': self.turn
+            'T': self.turn,
+            'B': self.breaks
         }
 
         self.last_ip_wrong = None
@@ -40,6 +41,10 @@ class Server():
     def turn(self, side, angle):
         self.controls.turn(side, angle)
         print('Turn', side, angle)
+
+    def breaks(self, *args):
+        self.controls.stop()
+        print('Breaks')
 
     def gen_new_salt(self):
         salt = str(random.randint(0, self.RANDOM_LIMIT))
