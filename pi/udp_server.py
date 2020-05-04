@@ -12,7 +12,7 @@ class Server():
         self.controls = motor_control.Controls()
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.server_socket.bind(('127.0.0.1', PORT))
+        self.server_socket.bind(('0.0.0.0', PORT))
         print('Server Is Listening On Port', PORT)
         self.server_up = True
 
