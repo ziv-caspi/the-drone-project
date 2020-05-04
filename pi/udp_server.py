@@ -8,7 +8,7 @@ import time
 class Server():
     def __init__(self, PORT, PASSWORD):
         self.PASSWORD = PASSWORD
-        self.DELAY = 0.05
+        self.DELAY = 0.2
         self.controls = motor_control.Controls()
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

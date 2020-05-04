@@ -4,7 +4,7 @@ import keyboard_fly
 
 HOME = '127.0.0.1'
 PI = '10.0.0.16'
-HOST = HOME
+HOST = PI
 PORT = 7777
 
 SPEED = '99'
