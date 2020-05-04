@@ -2,6 +2,7 @@ import socket
 import random
 import hashlib
 import motor_control
+import time
 
 
 class Server():
@@ -30,6 +31,8 @@ class Server():
             'T': self.turn
         }
 
+        self.last_ip_wrong = None
+
     def straight(self, speed, forward):
         self.controls.straight(speed, forward)
         print('Straight', speed, forward)
@@ -56,6 +59,10 @@ class Server():
     def handle_commands(self):
         try:
             msg_len, addrs = self.server_socket.recvfrom(2)
+
+            if addrs[0] == self.last_ip_wrong:
+                time.sleep(0.05)
+
             msg = self.server_socket.recv(int(msg_len))
             print(msg, 'From:', addrs)
             if msg == b'SALT':
@@ -69,6 +76,7 @@ class Server():
 
         except PermissionError as error:
             print(error, addrs)
+            self.last_ip_wrong = addrs[0]
 
     def calc_hash(self, string):
         m = hashlib.sha256()
