@@ -8,7 +8,7 @@ import time
 class Server():
     def __init__(self, PORT, PASSWORD):
         self.PASSWORD = PASSWORD
-
+        self.DELAY = 0.05
         self.controls = motor_control.Controls()
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -61,7 +61,7 @@ class Server():
             msg_len, addrs = self.server_socket.recvfrom(2)
 
             if addrs[0] == self.last_ip_wrong:
-                time.sleep(0.05)
+                time.sleep(self.DELAY)
 
             msg = self.server_socket.recv(int(msg_len))
             print(msg, 'From:', addrs)
