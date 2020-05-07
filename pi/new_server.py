@@ -92,10 +92,17 @@ class Server():
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
             print(sent_hash)
+            found = False
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
                     print(command)
-                    self.execute_command(command)
+                    found = True
+                    try:
+                        self.execute_command(command)
+                    except:
+                        print('Car Function Failed.')
+            if not found:
+                print('Hash Incompatible.', self.current_salt)
             self.current_salt += 1
 
         except:
