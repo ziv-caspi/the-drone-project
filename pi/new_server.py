@@ -22,8 +22,9 @@ class Server():
         self.PASSWORD = PASSWORD
         random.seed(SALT_SEED)
         self.RANDOM_LIMIT = 99999999
+        self.reps_file_path = 'random_reps.txt'
         try:
-            f = open('random_reps.txt', 'r')
+            f = open(self.reps_file_path, 'r')
             self.randoms_used = int(f.read())
             for i in range(self.randoms_used):
                 self.session_salt =  random.randint(0, self.RANDOM_LIMIT)
@@ -33,8 +34,6 @@ class Server():
             self.randoms_used = 0
             self.session_salt = None
             self.current_salt = None
-
-        self.reps_file = open('random_reps.txt', 'w')
 
         self.COMMANDS = ['S991', 'S990', 'T991', 'T990', 'B000']
 
@@ -76,7 +75,8 @@ class Server():
         self.randoms_used += 1
         self.current_salt = self.session_salt
         try:
-            self.reps_file.write(self.randoms_used)
+            with open(self.reps_file_path, 'w') as f:
+                f.write(str(self.randoms_used))
         except:
             print('Could Not Write To Reps file.', self.reps_file)
         print(self.current_salt)
