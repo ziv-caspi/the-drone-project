@@ -53,7 +53,7 @@ class Wheel:
 
         if 0 > power > 100:
             return
-            
+
 
         self.pwm.ChangeDutyCycle(power)
         self.speed = power
@@ -107,7 +107,6 @@ class Controls:
         self.speed = speed
         self.direction = forward
         self.turning = False
-        print('Straight')
 
     def stop(self, side = None):
         if side:
@@ -141,7 +140,6 @@ class Controls:
                 power = 100
             self.right_wheel.go(power)
         self.turning = True
-        print('Turn')
 
     # def drive_forward(self, duration = None, power = None):
     #

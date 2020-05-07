@@ -4,7 +4,9 @@ import hashlib
 
 random.seed(92760325)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect(('raspberrypi.local', 7777))
+PI = 'raspberrypi.local'
+HOME = '127.0.0.1'
+sock.connect((HOME, 7777))
 
 password = input('PASSWORD:')
 

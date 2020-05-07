@@ -118,7 +118,7 @@ class Server():
 
     def execute_command(self, command):
         func_key = command[0]
-        param1 = command[1:3]
+        param1 = int(command[1:3])
         param2 = self.BOOL[int(command[-1])]
         function = self.FUNC_KEY[func_key]
         print(function)
