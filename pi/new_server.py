@@ -100,3 +100,6 @@ class Server():
         self.FUNC_KEY[func_key](param1, param2)
 
 
+if __name__ == '__main__':
+    server = Server(7777, 0, 'drone', 92760325)
+    server.start()
