@@ -34,6 +34,7 @@ class Server():
             self.randoms_used = 0
             self.session_salt = None
             self.current_salt = None
+        self.reps_file = open(self.reps_file_path, 'w')
 
         self.COMMANDS = ['S991', 'S990', 'T991', 'T990', 'B000']
 
@@ -74,11 +75,12 @@ class Server():
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
-        try:
-            with open(self.reps_file_path, 'w') as f:
-                f.write(str(self.randoms_used))
-        except:
-            print('Could Not Write To Reps file.', self.reps_file)
+        self.reps_file.write(str(self.randoms_used))
+        # try:
+        #     with open(self.reps_file_path, 'w') as f:
+        #         f.write(str(self.randoms_used))
+        # except:
+        #     print('Could Not Write To Reps file.', self.reps_file)
         print(self.current_salt)
 
     def send_randoms_used(self):
