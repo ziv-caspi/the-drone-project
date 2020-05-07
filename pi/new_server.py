@@ -89,7 +89,7 @@ class Server():
         self.controls.straight(speed, forward)
         print('STRAIGHT')
 
-    def turn(self, side, angle):
+    def turn(self, angle, side):
         print(side, angle)
         self.controls.turn(side, angle)
         print('TURN')
