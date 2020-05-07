@@ -69,15 +69,18 @@ class Server():
         self.client_socket.send(str(self.randoms_used).encode())
 
     def straight(self, speed, forward):
+        print(speed, forward)
         self.controls.straight(speed, forward)
         print('STRAIGHT')
 
     def turn(self, side, angle):
+        print(side, angle)
         self.controls.turn(side, angle)
-        print('STRAIGHT')
+        print('TURN')
 
     def breaks(self, *args):
         self.controls.stop()
+        print('BREAKS')
 
     def new_connection(self):
         self.gen_new_session_salt()
@@ -91,7 +94,6 @@ class Server():
         try:
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
-            print(sent_hash)
             found = False
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
