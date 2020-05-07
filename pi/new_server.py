@@ -63,9 +63,11 @@ class Server():
 
     def straight(self, speed, forward):
         self.controls.straight(speed, forward)
+        print('STRAIGHT')
 
     def turn(self, side, angle):
         self.controls.turn(side, angle)
+        print('STRAIGHT')
 
     def breaks(self, *args):
         self.controls.stop()
@@ -102,7 +104,9 @@ class Server():
         func_key = command[0]
         param1 = command[1:3]
         param2 = command[-1]
-        self.FUNC_KEY[func_key](param1, param2)
+        function = self.FUNC_KEY[func_key]
+        print(function)
+        function(param1, param2)
 
 
 if __name__ == '__main__':
