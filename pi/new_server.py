@@ -40,9 +40,10 @@ class Server():
 
     def start(self):
         self.init_server()
-
+        print('Server is Up on PORT %d' % self.PORT)
         while True:
             self.client_socket, self.client_addrs = self.server_socket.accept()
+            print(self.client_addrs)
             self.new_connection()
             while self.client_connected:
                 self.handle_commands()
@@ -55,6 +56,7 @@ class Server():
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
+        print(self.current_salt)
 
     def send_randoms_used(self):
         self.client_socket.send(str(self.randoms_used).encode())
@@ -80,8 +82,10 @@ class Server():
         try:
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
+            print(sent_hash)
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
+                    print(command)
                     self.execute_command(command)
             self.current_salt += 1
 
