@@ -21,10 +21,20 @@ class Server():
 
         self.PASSWORD = PASSWORD
         random.seed(SALT_SEED)
-        self.randoms_used = 0
-        self.session_salt = None
-        self.current_salt = None
         self.RANDOM_LIMIT = 99999999
+        try:
+            f = open('random_reps.txt', 'r')
+            self.randoms_used = int(f.read())
+            for i in range(self.randoms_used):
+                self.session_salt =  random.randint(0, self.RANDOM_LIMIT)
+            self.current_salt = self.session_salt
+
+        except:
+            self.randoms_used = 0
+            self.session_salt = None
+            self.current_salt = None
+
+        self.reps_file = open('random_reps.txt', 'w')
 
         self.COMMANDS = ['S991', 'S990', 'T991', 'T990', 'B000']
 
@@ -63,6 +73,7 @@ class Server():
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
+        self.reps_file.write(self.randoms_used)
         print(self.current_salt)
 
     def send_randoms_used(self):
