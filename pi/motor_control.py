@@ -125,14 +125,14 @@ class Controls:
         if self.turning:
             self.allign_wheels()
 
-        if side == 'LEFT':
+        if not side:
             power = self.left_wheel.speed - power
             if power < 0:
                 power = 0
             if power > 100:
                 power = 100
             self.left_wheel.go(power)
-        if side == 'RIGHT':
+        elif side:
             power = self.right_wheel.speed - power
             if power < 0:
                 power = 0
