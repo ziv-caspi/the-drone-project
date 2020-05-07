@@ -75,7 +75,10 @@ class Server():
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
-        self.reps_file.write(self.randoms_used)
+        try:
+            self.reps_file.write(self.randoms_used)
+        except:
+            print('Could Not Write To Reps file.', self.reps_file)
         print(self.current_salt)
 
     def send_randoms_used(self):
