@@ -43,11 +43,17 @@ class Server():
         self.init_server()
         print('Server is Up on PORT %d' % self.PORT)
         while True:
-            self.client_socket, self.client_addrs = self.server_socket.accept()
-            print(self.client_addrs)
-            self.new_connection()
-            while self.client_connected:
-                self.handle_commands()
+            try:
+                self.client_socket, self.client_addrs = self.server_socket.accept()
+                print(self.client_addrs)
+                self.new_connection()
+                while self.client_connected:
+                    self.handle_commands()
+            except:
+                print('Connection Aborted.')
+                self.client_socket.close()
+                self.client_connected = False
+                self.client_addrs = None
 
     def init_server(self):
         self.server_socket.bind((self.HOST, self.PORT))

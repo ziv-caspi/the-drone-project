@@ -17,7 +17,7 @@ else:
 
 while True:
     command = input('COMMAND:')
-    string = password + salt + command
+    string = password + str(salt) + command
     m = hashlib.sha256()
     m.update(string.encode())
     hsh = m.digest()
