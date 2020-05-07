@@ -108,7 +108,7 @@ class Server():
             self.current_salt += 1
 
         except:
-            pass
+            raise ConnectionAbortedError
 
     def compute_hash(self, COMMAND):
         string = self.PASSWORD + str(self.current_salt) + COMMAND
