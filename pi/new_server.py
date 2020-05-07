@@ -8,6 +8,7 @@ class Server():
     def __init__(self, PORT, CONNECTIONS, PASSWORD, SALT_SEED):
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.controls = motor_control.Controls()
 
         self.HOST = '0.0.0.0'
