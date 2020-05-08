@@ -1,4 +1,7 @@
 import hashlib
+from Cryptodome.PublicKey import RSA
+from Cryptodome.Random import get_random_bytes
+from Cryptodome.Cipher import AES, PKCS1_OAEP
 import base64
 import time
 
@@ -88,3 +91,38 @@ class Security():
 
         except:
             return False
+
+    class Encryption():
+        def __init__(self, encrypted_session_key, nonce):
+            self.public_key = RSA.import_key(open('receiver.pem', 'rb').read())
+            self.private_key = RSA.import_key(open('private.pem', 'rb').read())
+            self.session_key = self.decrypt_session_key(encrypted_session_key)
+            self.nonce = nonce
+
+        def decrypt_session_key(self, encrypted_session_key):
+            cipher_rsa = PKCS1_OAEP.new(self.private_key)
+            session_key = cipher_rsa.decrypt(encrypted_session_key)
+            return session_key
+
+        def re_init_session_cipher(self, nonce, encrypted_session_key):
+            self.session_key = self.decrypt_session_key(encrypted_session_key)
+            self.nonce = nonce
+
+        def decrypt_session_text(self, tag, ciphertext):
+            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, self.nonce)
+            try:
+                data = cipher_aes.decrypt_and_verify(ciphertext, tag)
+                return data.decode()
+            except ValueError:
+                print('Bad Encryption Key')
+                return None
+
+
+        def encrypt_session_text(self, plaintext):
+            cipher_aes = AES.new(self.session_key, AES.MODE_EAX, self.nonce)
+            ciphertext, tag = cipher_aes.encrypt_and_digest(plaintext)
+            return ciphertext, tag
+
+
+
+
