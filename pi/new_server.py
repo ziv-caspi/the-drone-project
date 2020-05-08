@@ -78,7 +78,7 @@ class Server():
             with open(self.reps_file_path, 'w') as f:
                 f.write(str(self.randoms_used))
         except:
-            print('Could Not Write To Reps file.', self.reps_file)
+            print('Could Not Write To Reps file.')
         print(self.current_salt)
 
     def send_randoms_used(self):
