@@ -58,8 +58,6 @@ class Server():
                 self.new_connection()
                 while self.client_connected:
                     self.handle_commands()
-            except FileNotFoundError:
-                print('Error With Reps FILE.')
             except:
                 print('Connection Aborted.')
                 self.client_socket.close()
