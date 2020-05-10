@@ -4,6 +4,7 @@ import hashlib
 import motor_control
 import time
 
+
 class Server():
     def __init__(self, PORT, CONNECTIONS, PASSWORD, SALT_SEED):
 
