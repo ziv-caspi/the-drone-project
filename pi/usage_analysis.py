@@ -54,10 +54,7 @@ class UsageAnalysis():
         df = pd.DataFrame(dict)
         writer = pd.ExcelWriter('data/usg_analysis_{0}.xlsx'.format(endpoint_ip), engine='xlsxwriter')
         df.to_excel(writer)
-        try:
-            writer.save()
-        except:
-            print('Cant Save File.')
+        writer.save()
 
     def dict_list_to_xl(self, list):
         for dict in list:
