@@ -1,4 +1,7 @@
+import datetime
 import pandas as pd
+import os.path
+
 
 class UsageAnalysis():
     class Endpoint():
@@ -10,11 +13,13 @@ class UsageAnalysis():
 
     def __init__(self):
         self.endpoints = []
-        self.mapping_dict = {'ip': None,
-                             'sent_requests': None,
-                             'approved_commands': None,
-                             'bad_requests_count': None
-                             }
+        self.mapping_list = [
+            'ip',
+            'sent_requests',
+            'approved_commands',
+            'bad_requests_count'
+        ]
+
 
     def get_endpoint_by_ip(self, ip) -> Endpoint:
         for endpoint in self.endpoints:
@@ -24,13 +29,44 @@ class UsageAnalysis():
 
     def request_received(self, src_ip, request, command):
         endpoint = self.get_endpoint_by_ip(src_ip)
+        
         if not endpoint:
-            raise LookupError
+            endpoint = self.Endpoint(src_ip)
+            self.endpoints.append(endpoint)
 
-        endpoint.sent_requests.append(request)
+        now = datetime.datetime.now()
+        now = now.strftime('%H:%M:%S')
+
         if command:
             endpoint.approved_commands.append(command)
+            endpoint.sent_requests.append((now, request, command))
         else:
+            endpoint.sent_requests.append((now, request, 'Not Valid'))
             endpoint.bad_requests_count += 1
-    def to_excel(self):
-        pass
+    def endpoint_to_dict(self, endpoint):
+        map = ['Time', 'Raw', 'Command']
+        d = {}
+        for i in range(len(map)):
+            d[map[i]] = endpoint.sent_requests[i]
+        return d
+
+    def dict_to_xl(self, dict, endpoint_ip):
+        df = pd.DataFrame(dict)
+        writer = pd.ExcelWriter('data/usg_analysis_{0}.xlsx'.format(endpoint_ip), engine='xlsxwriter')
+        df.to_excel(writer)
+        try:
+            writer.save()
+        except:
+            print('Cant Save File.')
+
+    def dict_list_to_xl(self, list):
+        for dict in list:
+            pass
+    
+    def save_endpoint(self, src_ip):
+        endpoint = self.get_endpoint_by_ip(src_ip)
+        dict = self.endpoint_to_dict(endpoint)
+        self.dict_to_xl(dict, endpoint.ip)
+
+
+

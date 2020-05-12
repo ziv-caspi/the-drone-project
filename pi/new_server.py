@@ -2,7 +2,7 @@ import socket
 import random
 import hashlib
 import motor_control
-import time
+import usage_analysis
 
 
 class Server():
@@ -11,6 +11,7 @@ class Server():
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.controls = motor_control.Controls()
+        self.usage_analysis = usage_analysis.UsageAnalysis()
 
         self.HOST = '0.0.0.0'
         self.PORT = PORT
@@ -60,7 +61,13 @@ class Server():
                 while self.client_connected:
                     self.handle_commands()
             except:
+
                 print('Connection Aborted.')
+                try:
+                    self.usage_analysis.save_endpoint(self.client_addrs[0])
+                except:
+                    print('Failed To Get Client Addres, Data not saved.')
+
                 self.client_socket.close()
                 self.client_connected = False
                 self.client_addrs = None
@@ -109,9 +116,11 @@ class Server():
         try:
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
+
             found = False
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
+                    self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
                     print(command)
                     found = True
                     try:
@@ -119,6 +128,7 @@ class Server():
                     except:
                         print('Car Function Failed.')
             if not found:
+                self.usage_analysis.request_received(self.client_addrs[0], sent_hash, None)
                 print('Hash Incompatible.', self.current_salt)
             self.current_salt += 1
 

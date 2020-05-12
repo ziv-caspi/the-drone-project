@@ -125,7 +125,7 @@ class Security():
             self.invalid_requests_count = 0
 
     def __init__(self):
-        logging.basicConfig(filename='logs/suspicious_activity.log', level=logging.WARNING)
+        logging.basicConfig(filename='data/suspicious_activity.log', level=logging.WARNING)
         self.active_endpoints = []
 
     def new_ip_connected(self, ip):
