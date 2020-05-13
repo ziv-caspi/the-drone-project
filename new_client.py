@@ -11,7 +11,7 @@ RIGHT = 77
 
 SPEED = '99'
 ANGLE = '99'
-
+REPS_LIMIT = 10
 
 def create_command():
     c = ord(keyboard_fly.read_key())
@@ -38,7 +38,6 @@ def create_command():
 
 
 def main():
-    random.seed(92760325)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     PI = 'raspberrypi.local'
     HOME = '127.0.0.1'
@@ -48,11 +47,15 @@ def main():
 
     iters = int(sock.recv(1024).decode())
     print(iters)
-    if iters == 1:
-        salt = random.randint(0, 99999999)
+    if iters >= REPS_LIMIT:
+        print('MAX REPS EXCEEDED.')
+        random.seed(92760325 ** 2)
+        iters = 1
     else:
-        for i in range(iters):
-            salt = random.randint(0, 99999999)
+        random.seed(92760325)
+
+    for i in range(iters):
+        salt = random.randint(0, 99999999)
 
     while True:
         print(salt)

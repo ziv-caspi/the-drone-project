@@ -24,13 +24,22 @@ class Server():
         self.PASSWORD = PASSWORD
         random.seed(SALT_SEED)
         self.RANDOM_LIMIT = 99999999
+        self.REPS_LIMIT = 10
         self.reps_file_path = 'random_reps.txt'
         try:
+
             f = open(self.reps_file_path, 'r')
             self.randoms_used = int(f.read())
+
+            if self.randoms_used >= self.REPS_LIMIT:
+                print('MAX REPS EXCEEDED.')
+                random.seed(SALT_SEED ** 2)
+                self.randoms_used = 1 # Notice Can Cause Repetition
+
             for i in range(self.randoms_used):
                 self.session_salt =  random.randint(0, self.RANDOM_LIMIT)
             self.current_salt = self.session_salt
+
 
         except:
             self.randoms_used = 0

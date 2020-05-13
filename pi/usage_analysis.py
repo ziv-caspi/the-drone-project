@@ -63,6 +63,7 @@ class UsageAnalysis():
     def save_endpoint(self, src_ip):
         endpoint = self.get_endpoint_by_ip(src_ip)
         dict = self.endpoint_to_dict(endpoint)
+        print('Dict:', dict)
         self.dict_to_xl(dict, endpoint.ip)
 
 
