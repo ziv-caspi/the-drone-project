@@ -90,12 +90,14 @@ class Server():
         self.server_socket.listen(self.CONNECTIONS)
 
     def gen_new_session_salt(self):
-        if self.randoms_used == self.RANDOM_LIMIT:
-            random.seed(self.SEED ** 2)
-            self.randoms_used += 1
+
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
+        if self.randoms_used == self.RANDOM_LIMIT:
+            random.seed(self.SEED ** 2)
+            self.randoms_used += 1
+            print('MAX REPS EXCEEDED.')
         try:
             with open(self.reps_file_path, 'w') as f:
                 f.write(str(self.randoms_used))
