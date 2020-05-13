@@ -30,13 +30,15 @@ class Server():
 
             f = open(self.reps_file_path, 'r')
             self.randoms_used = int(f.read())
+            iters = self.randoms_used-
 
             if self.randoms_used >= self.REPS_LIMIT:
                 print('MAX REPS EXCEEDED.')
                 random.seed(SALT_SEED ** 2)
-                self.randoms_used = 1 # Notice Can Cause Repetition
+                iters = 1 # Notice Can Cause Repetition
 
-            for i in range(self.randoms_used):
+
+            for i in range(iters):
                 self.session_salt =  random.randint(0, self.RANDOM_LIMIT)
             self.current_salt = self.session_salt
 
