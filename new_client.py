@@ -46,7 +46,7 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     PI = '10.0.0.16'
     HOME = '127.0.0.1'
-    sock.connect((PI, 7777))
+    sock.connect((HOME, 7777))
 
     password = input('PASSWORD:')
 
