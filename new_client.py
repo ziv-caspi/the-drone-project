@@ -55,7 +55,7 @@ def main():
     if iters >= REPS_LIMIT:
         print('MAX REPS EXCEEDED.')
         random.seed(92760325 ** 2)
-        iters -= REPS_LIMIT + 1
+        iters = iters - REPS_LIMIT
     else:
         random.seed(92760325)
 
