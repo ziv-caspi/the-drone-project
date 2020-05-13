@@ -118,6 +118,7 @@ class Server():
     def new_connection(self):
         self.gen_new_session_salt()
         try:
+            print(self.randoms_used)
             self.client_socket.send(str(self.randoms_used).encode())
             self.client_connected = True
         except (ConnectionAbortedError, ConnectionResetError, ConnectionError, ConnectionRefusedError) as error:

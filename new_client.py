@@ -37,6 +37,11 @@ def create_command():
     return command
 
 
+
+
+
+
+
 def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     PI = '10.0.0.16'
@@ -50,7 +55,7 @@ def main():
     if iters >= REPS_LIMIT:
         print('MAX REPS EXCEEDED.')
         random.seed(92760325 ** 2)
-        iters -= REPS_LIMIT
+        iters -= REPS_LIMIT + 1
     else:
         random.seed(92760325)
 
