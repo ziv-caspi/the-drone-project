@@ -35,7 +35,7 @@ class Server():
             if self.randoms_used >= self.REPS_LIMIT:
                 print('MAX REPS EXCEEDED.')
                 random.seed(SALT_SEED ** 2)
-                iters = self.randoms_used - self.REPS_LIMIT # Notice Can Cause Repetition
+                iters = self.randoms_used - self.REPS_LIMIT + 1# Notice Can Cause Repetition
 
 
             for i in range(iters):
