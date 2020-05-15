@@ -49,8 +49,8 @@ def main():
     sock.connect((PI, 7777))
 
     password = input('PASSWORD:')
-
-    iters = int(sock.recv(1024).decode())
+    iters_len = int(sock.recv(3))
+    iters = int(sock.recv(iters_len).decode())
     print(iters)
     if iters >= REPS_LIMIT:
         print('MAX REPS EXCEEDED.')
@@ -59,6 +59,7 @@ def main():
     else:
         random.seed(92760325)
 
+    assert iters >= 1
     for i in range(iters):
         salt = random.randint(0, 99999999)
 
