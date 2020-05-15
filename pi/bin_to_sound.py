@@ -13,7 +13,7 @@ def bin_to_sound(bin_string):
         if val == '1':
             play_sound('beep-01a.wav', 0.1)
         else:
-            pass
+            time.sleep(0.1)
 
 
 
