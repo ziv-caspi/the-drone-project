@@ -11,7 +11,7 @@ RIGHT = 77
 
 SPEED = '99'
 ANGLE = '99'
-REPS_LIMIT = 10
+REPS_LIMIT = 1000000
 
 def create_command():
     c = ord(keyboard_fly.read_key())

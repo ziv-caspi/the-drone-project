@@ -24,7 +24,7 @@ class Server():
         self.SEED = SALT_SEED
         random.seed(SALT_SEED)
         self.RANDOM_LIMIT = 99999999
-        self.REPS_LIMIT = 10
+        self.REPS_LIMIT = 1000000
         self.reps_file_path = 'random_reps.txt'
         try:
 
