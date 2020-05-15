@@ -24,7 +24,7 @@ class Server():
         self.SEED = SALT_SEED
         random.seed(SALT_SEED)
         self.RANDOM_LIMIT = 99999999
-        self.REPS_LIMIT = 10
+        self.REPS_LIMIT = 1000000
         self.reps_file_path = 'random_reps.txt'
         try:
 
@@ -125,7 +125,8 @@ class Server():
         self.gen_new_session_salt()
         try:
             print(self.randoms_used)
-            self.client_socket.send(str(self.randoms_used).encode())
+            msg = str(len(str(self.randoms_used))).zfill(3) + str(self.randoms_used)
+            self.client_socket.send(msg.encode())
             self.client_connected = True
         except (ConnectionAbortedError, ConnectionResetError, ConnectionError, ConnectionRefusedError) as error:
             print(error, self.client_addrs)
