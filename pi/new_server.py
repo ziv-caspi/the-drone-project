@@ -3,7 +3,6 @@ import random
 import hashlib
 import motor_control
 import usage_analysis
-import pdb
 
 class Server():
     def __init__(self, PORT, CONNECTIONS, PASSWORD, SALT_SEED):
@@ -90,11 +89,10 @@ class Server():
         self.server_socket.listen(self.CONNECTIONS)
 
     def gen_new_session_salt(self):
-        pdb.set_trace()
         if self.randoms_used == self.REPS_LIMIT - 1:
             random.seed(self.SEED ** 2)
-            self.randoms_used += 1
             print('MAX REPS EXCEEDED.', self.randoms_used)
+
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
         self.randoms_used += 1
         self.current_salt = self.session_salt
