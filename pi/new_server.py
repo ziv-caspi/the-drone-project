@@ -90,7 +90,7 @@ class Server():
         self.server_socket.listen(self.CONNECTIONS)
 
     def gen_new_session_salt(self):
-        if self.randoms_used == self.RANDOM_LIMIT - 1:
+        if self.randoms_used == self.REPS_LIMIT - 1:
             random.seed(self.SEED ** 2)
             self.randoms_used += 1
             print('MAX REPS EXCEEDED.', self.randoms_used)
