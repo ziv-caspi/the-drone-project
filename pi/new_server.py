@@ -126,7 +126,10 @@ class Server():
     def new_connection(self):
         self.gen_new_session_salt()
         try:
-            self.bin_to_car('{0:b}'.format(self.session_salt))
+            try:
+                self.bin_to_car('{0:b}'.format(self.session_salt), 0.4, 0.2)
+            except:
+                print('Error with car sequence')
             print(self.randoms_used)
             msg = str(len(str(self.randoms_used))).zfill(3) + str(self.randoms_used)
             self.client_socket.send(msg.encode())
