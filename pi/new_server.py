@@ -1,6 +1,8 @@
 import socket
 import random
 import hashlib
+import time
+
 import motor_control
 import usage_analysis
 
@@ -167,6 +169,13 @@ class Server():
         function = self.FUNC_KEY[func_key]
         print(function)
         function(param1, param2)
+
+    def bin_to_car(self, bin_string, intervals, pause):
+        for val in bin_string:
+            self.controls.turn(self.BOOL[int(val)], 99)
+            time.sleep(intervals)
+            self.controls.stop()
+            time.sleep(pause)
 
 
 if __name__ == '__main__':
