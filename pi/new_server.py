@@ -127,7 +127,7 @@ class Server():
         self.gen_new_session_salt()
         try:
             try:
-                self.bin_to_car('{0:b}'.format(self.session_salt), 0.4, 0.2)
+                self.bin_to_car('{0:b}'.format(self.SEED), 0.4, 0.2)
             except:
                 print('Error with car sequence')
             print(self.randoms_used)

@@ -8,6 +8,7 @@ UP = 72
 DOWN = 80
 LEFT = 75
 RIGHT = 77
+ENTER = 13
 
 SPEED = '99'
 ANGLE = '99'
@@ -38,6 +39,17 @@ def create_command():
 
 
 
+def enter_seq():
+    print('Enter Car Sequence:')
+    key = 0
+    seed = ''
+    while key != 0:
+        key = ord(keyboard_fly.read_key())
+        if key == LEFT:
+            seed += 0
+        if key == RIGHT:
+            seed += 1
+    return int(seed, 2)
 
 
 
@@ -47,17 +59,17 @@ def main():
     PI = '10.0.0.16'
     HOME = '127.0.0.1'
     sock.connect((PI, 7777))
-
+    seed = enter_seq()
     password = input('PASSWORD:')
     iters_len = int(sock.recv(3))
     iters = int(sock.recv(iters_len).decode())
     print(iters)
     if iters >= REPS_LIMIT:
         print('MAX REPS EXCEEDED.')
-        random.seed(92760325 ** 2)
+        random.seed(seed ** 2)
         iters = iters - REPS_LIMIT + 1
     else:
-        random.seed(92760325)
+        random.seed(seed)
 
     assert iters >= 1
     for i in range(iters):
