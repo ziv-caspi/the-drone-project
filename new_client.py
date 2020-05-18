@@ -43,12 +43,13 @@ def enter_seq():
     print('Enter Car Sequence:')
     key = 0
     seed = ''
-    while key != 0:
+    while key != ENTER:
         key = ord(keyboard_fly.read_key())
         if key == LEFT:
             seed += 0
         if key == RIGHT:
             seed += 1
+    print(seed)
     return int(seed, 2)
 
 
