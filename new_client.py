@@ -46,9 +46,9 @@ def enter_seq():
     while key != ENTER:
         key = ord(keyboard_fly.read_key())
         if key == LEFT:
-            seed += 0
+            seed += '0'
         if key == RIGHT:
-            seed += 1
+            seed += '1'
     print(seed)
     return int(seed, 2)
 
