@@ -44,6 +44,7 @@ class Server():
             for i in range(iters):
                 self.session_salt =  random.randint(0, self.RANDOM_LIMIT)
             self.current_salt = self.session_salt
+            print('SEED is:', self.SEED, 'SALT is:', self.current_salt)
 
 
         except:
