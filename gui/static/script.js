@@ -61,6 +61,13 @@ function right() {
 
 }
 
+function breaks() {
+    front_indicator.style.opacity = '0';
+    back_indicator.style.opacity = '0';
+    fetch('/breaks')
+
+}
+
 function checkKey(e) {
 
     e = e || window.event;
@@ -76,6 +83,9 @@ function checkKey(e) {
     }
     else if (e.keyCode == '39') {
        right();
+    }
+    else if (e.keyCode == '32') {
+       breaks();
     }
 
 }

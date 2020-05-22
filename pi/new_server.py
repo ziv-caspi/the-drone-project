@@ -184,5 +184,11 @@ class Server():
 
 
 if __name__ == '__main__':
+    sock = socket.socket()
+    sock.connect(('10.0.0.15', 7778))
+    sock.send(b'Im Alive!')
+    
+    
+    
     server = Server(7777, 0, 'drone', 92760325)
     server.start()
