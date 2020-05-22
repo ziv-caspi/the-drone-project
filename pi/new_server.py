@@ -185,7 +185,7 @@ class Server():
 
 if __name__ == '__main__':
     sock = socket.socket()
-    sock.connect(('10.0.0.15', 7778))
+    sock.connect(('10.0.0.8', 7778))
     sock.send(b'Im Alive!')
     
     
