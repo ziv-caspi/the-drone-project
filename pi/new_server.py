@@ -159,6 +159,7 @@ class Server():
             return None, sent_hash
         except (ValueError) as e:
             print('Packet Not By Protocol', e)
+            raise ConnectionAbortedError
 
     def handle_commands(self):
         try:
