@@ -48,8 +48,10 @@ class Server():
             print('SEED is:', self.SEED, 'SALT is:', self.current_salt)
 
 
-        except:
+        except FileNotFoundError:
             self.randoms_used = 0
+            with open(self.reps_file_path, 'w') as f:
+                f.write(self.randoms_used)
             self.session_salt = None
             self.current_salt = None
 
