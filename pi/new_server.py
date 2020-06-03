@@ -31,8 +31,8 @@ class Server():
         self.reps_file_path = 'random_reps.txt'
         try:
 
-            f = open(self.reps_file_path, 'r')
-            self.randoms_used = int(f.read())
+            with open(self.reps_file_path, 'r') as f:
+                self.randoms_used = int(f.read())
             iters = self.randoms_used
 
             if self.randoms_used >= self.REPS_LIMIT:
