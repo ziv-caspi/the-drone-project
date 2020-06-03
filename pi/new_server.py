@@ -157,9 +157,8 @@ class Server():
                     self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
                     return command, sent_hash
             return None, sent_hash
-        except (ValueError, socket.error) as e:
-            print(e)
-            raise ConnectionAbortedError
+        except (ValueError) as e:
+            print('Packet Not By Protocol', e)
 
     def handle_commands(self):
         try:
@@ -216,6 +215,7 @@ if __name__ == '__main__':
     server = Server(7777, 0, 'drone', 92760325, 1)
     for start_attempt in range(3):
         try:
+            server.start()
             server.start()
         except Exception as e:
             print(f"Attempt {start_attempt+1}/3 has failed")
