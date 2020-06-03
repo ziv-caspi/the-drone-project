@@ -158,6 +158,7 @@ class Server():
                     return command, sent_hash
             return None, sent_hash
         except (ValueError, socket.error) as e:
+            print(e)
             raise ConnectionAbortedError
 
     def handle_commands(self):
@@ -200,11 +201,13 @@ class Server():
     def auth_msg(self):
         print('Waiting On Auth Message...')
         command, sent_hash = self.recv_command()
+        print('command:', command)
         if command:
             self.client_socket.settimeout(None)
             print('AUTH COMMAND Received:', command)
             return
 
+        print('Bad Hash')
         raise ConnectionAbortedError
 
 
