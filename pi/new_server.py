@@ -155,6 +155,7 @@ class Server():
                 if self.compute_hash(command) == sent_hash:
                     self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
                     return command, sent_hash
+            print('Excpected Salt:', self.current_salt)
             return None, sent_hash
         except (ValueError) as e:
             print('Packet Not By Protocol', e)
