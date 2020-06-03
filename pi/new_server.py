@@ -151,7 +151,6 @@ class Server():
         try:
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
-            self.current_salt += 1
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
                     self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
@@ -181,6 +180,7 @@ class Server():
         string = self.PASSWORD + str(self.current_salt) + COMMAND
         m = hashlib.sha256()
         m.update(string.encode())
+        self.current_salt += 1
         return m.digest()
 
     def execute_command(self, command):
@@ -207,7 +207,6 @@ class Server():
             print('AUTH COMMAND Received:', command)
             return
 
-        print('Bad Hash')
         raise ConnectionAbortedError
 
 
