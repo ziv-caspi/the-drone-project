@@ -149,7 +149,7 @@ class Server():
     def recv_command(self):
         hash_len = int(self.client_socket.recv(2).decode())
         sent_hash = self.client_socket.recv(hash_len)
-
+        self.current_salt += 1
         for command in self.COMMANDS:
             if self.compute_hash(command) == sent_hash:
                 self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
@@ -169,8 +169,6 @@ class Server():
                 self.usage_analysis.request_received(self.client_addrs[0], sent_hash, None)
                 print('Hash Incompatible. Dumping Session', self.current_salt)
                 raise ConnectionResetError
-
-            self.current_salt += 1
 
         except:
             raise ConnectionAbortedError
