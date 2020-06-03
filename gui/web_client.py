@@ -27,6 +27,8 @@ class Client():
 
         self.initialized = False
 
+        self.sock = None
+
     def up(self):
         if not self.SEED or not self.PASSWORD:
             return

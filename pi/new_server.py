@@ -215,7 +215,7 @@ class Server():
 
 if __name__ == '__main__':
     
-    server = Server(7777, 0, 'drone', 92760325, 1)
+    server = Server(7777, 0, 'drone', 92760325, 0.2)
     for start_attempt in range(3):
         try:
             server.start()
