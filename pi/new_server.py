@@ -198,6 +198,7 @@ class Server():
             time.sleep(pause)
 
     def auth_msg(self):
+        print('Waiting On Auth Message...')
         command, sent_hash = self.recv_command()
         if command:
             self.client_socket.settimeout(None)
