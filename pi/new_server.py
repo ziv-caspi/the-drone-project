@@ -73,11 +73,16 @@ class Server():
             try:
                 self.client_socket, self.client_addrs = self.server_socket.accept()
                 self.client_addrs.settimeout(self.TIMEOUT)
-                print(self.client_addrs)
-                self.new_connection()
-                self.auth_msg()
-                while self.client_connected:
-                    self.handle_commands()
+                try:
+                    print(self.client_addrs)
+                    self.new_connection()
+                    self.auth_msg()
+                    while self.client_connected:
+                        self.handle_commands()
+                except socket.timeout as e:
+                    print('Connection TimeOut Exceeded. Dumping Session')
+                    raise ConnectionAbortedError
+
             except:
 
                 print('Connection Aborted.')
@@ -196,8 +201,9 @@ class Server():
         command, sent_hash = self.recv_command()
         if command:
             self.client_socket.settimeout(None)
-        else:
-            raise ConnectionAbortedError
+            return
+
+        raise ConnectionAbortedError
 
 
 if __name__ == '__main__':
