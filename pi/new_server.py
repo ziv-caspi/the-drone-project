@@ -155,7 +155,6 @@ class Server():
             for command in self.COMMANDS:
                 if self.compute_hash(command) == sent_hash:
                     self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
-                    print('AUTH COMMAND Received:', command)
                     return command, sent_hash
             return None, sent_hash
         except (ValueError, socket.error) as e:
@@ -202,6 +201,7 @@ class Server():
         command, sent_hash = self.recv_command()
         if command:
             self.client_socket.settimeout(None)
+            print('AUTH COMMAND Received:', command)
             return
 
         raise ConnectionAbortedError
