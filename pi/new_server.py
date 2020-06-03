@@ -79,13 +79,13 @@ class Server():
                     self.auth_msg()
                     while self.client_connected:
                         self.handle_commands()
-                except socket.timeout as e:
+                except socket.timeout:
                     print('Connection TimeOut Exceeded. Dumping Session')
                     raise ConnectionAbortedError
 
-            except:
-
+            except socket.error as e:
                 print('Connection Aborted.')
+                print(e)
                 try:
                     self.usage_analysis.save_endpoint(self.client_addrs[0])
                 except:
@@ -159,7 +159,6 @@ class Server():
 
     def handle_commands(self):
         try:
-
             command, sent_hash = self.recv_command()
             if command:
                 try:
@@ -209,4 +208,9 @@ class Server():
 if __name__ == '__main__':
     
     server = Server(7777, 0, 'drone', 92760325, 1)
-    server.start()
+    for start_attempt in range(3):
+        try:
+            server.start()
+        except Exception as e:
+            print(f"Attempt {start_attempt+1}/3 has failed")
+            print(e)
