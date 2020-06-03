@@ -84,8 +84,7 @@ class Server():
                     raise ConnectionAbortedError
 
             except socket.error as e:
-                print('Connection Aborted.')
-                print(e)
+                print('Connection Aborted:', e)
                 try:
                     self.usage_analysis.save_endpoint(self.client_addrs[0])
                 except:
@@ -214,4 +213,4 @@ if __name__ == '__main__':
             server.start()
         except Exception as e:
             print(f"Attempt {start_attempt+1}/3 has failed")
-            print(e.with_traceback())
+            print(e)
