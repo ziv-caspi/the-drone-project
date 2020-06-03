@@ -91,7 +91,9 @@ class Client():
         print('Iters:', iters,'SALT:', self.salt, 'SEED:', self.SEED, self.PASSWORD)
 
         if self.sock and self.salt:
+            self.hash_and_send('B000')
             self.initialized = True
+
 
     def hash_and_send(self, command):
         string = self.PASSWORD + str(self.salt) + command

@@ -153,7 +153,7 @@ class Server():
         for command in self.COMMANDS:
             if self.compute_hash(command) == sent_hash:
                 self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
-                print(command)
+                print('AUTH COMMAND Received:', command)
                 return command, sent_hash
         return None, sent_hash
 
