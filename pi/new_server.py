@@ -51,7 +51,7 @@ class Server():
         except (FileNotFoundError, ValueError):
             self.randoms_used = 0
             with open(self.reps_file_path, 'w') as f:
-                f.write(self.randoms_used)
+                f.write(str(self.randoms_used))
             self.session_salt = None
             self.current_salt = None
 
