@@ -7,8 +7,9 @@ import motor_control
 import usage_analysis
 
 class Server():
-    def __init__(self, PORT, CONNECTIONS, PASSWORD, SALT_SEED):
+    def __init__(self, PORT, CONNECTIONS, PASSWORD, SALT_SEED, TIMEOUT):
 
+        self.TIMEOUT = TIMEOUT
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.controls = motor_control.Controls()
@@ -71,8 +72,10 @@ class Server():
         while True:
             try:
                 self.client_socket, self.client_addrs = self.server_socket.accept()
+                self.client_addrs.settimeout(self.TIMEOUT)
                 print(self.client_addrs)
                 self.new_connection()
+                self.auth_msg()
                 while self.client_connected:
                     self.handle_commands()
             except:
@@ -138,24 +141,31 @@ class Server():
         except (ConnectionAbortedError, ConnectionResetError, ConnectionError, ConnectionRefusedError) as error:
             print(error, self.client_addrs)
 
+    def recv_command(self):
+        hash_len = int(self.client_socket.recv(2).decode())
+        sent_hash = self.client_socket.recv(hash_len)
+
+        for command in self.COMMANDS:
+            if self.compute_hash(command) == sent_hash:
+                self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
+                print(command)
+                return command, sent_hash
+        return None, sent_hash
+
     def handle_commands(self):
         try:
-            hash_len = int(self.client_socket.recv(2).decode())
-            sent_hash = self.client_socket.recv(hash_len)
 
-            found = False
-            for command in self.COMMANDS:
-                if self.compute_hash(command) == sent_hash:
-                    self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
-                    print(command)
-                    found = True
-                    try:
-                        self.execute_command(command)
-                    except:
-                        print('Car Function Failed.')
-            if not found:
+            command, sent_hash = self.recv_command()
+            if command:
+                try:
+                    self.execute_command(command)
+                except:
+                    print('Car Function Failed.')
+            else:
                 self.usage_analysis.request_received(self.client_addrs[0], sent_hash, None)
-                print('Hash Incompatible.', self.current_salt)
+                print('Hash Incompatible. Dumping Session', self.current_salt)
+                raise ConnectionResetError
+
             self.current_salt += 1
 
         except:
@@ -182,8 +192,15 @@ class Server():
             self.controls.stop()
             time.sleep(pause)
 
+    def auth_msg(self):
+        command, sent_hash = self.recv_command()
+        if command:
+            self.client_socket.settimeout(None)
+        else:
+            raise ConnectionAbortedError
+
 
 if __name__ == '__main__':
     
-    server = Server(7777, 0, 'drone', 92760325)
+    server = Server(7777, 0, 'drone', 92760325, 1)
     server.start()

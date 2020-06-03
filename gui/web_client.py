@@ -6,7 +6,7 @@ import hashlib
 SPEED = '99'
 ANGLE = '99'
 REPS_LIMIT = 1000000
-PI = '10.0.0.16'
+PI = 'raspberrypi.local'
 HOME = '127.0.0.1'
 
 class Client():
