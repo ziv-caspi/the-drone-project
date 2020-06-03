@@ -184,5 +184,6 @@ class Server():
 
 
 if __name__ == '__main__':
+    
     server = Server(7777, 0, 'drone', 92760325)
     server.start()

@@ -19,7 +19,13 @@ class Client():
 
         self.initialized = False
 
+    def reset(self):
+        self.SEED = None
+        self.PASSWORD = None
 
+        self.salt = None
+
+        self.initialized = False
 
     def up(self):
         if not self.SEED or not self.PASSWORD:
@@ -71,7 +77,6 @@ class Client():
         iters_len = int(self.sock.recv(3))
         iters = int(self.sock.recv(iters_len).decode())
 
-        print(iters)
         if iters >= REPS_LIMIT:
             print('MAX REPS EXCEEDED.')
             random.seed(self.SEED ** 2)
@@ -83,7 +88,7 @@ class Client():
         for i in range(iters):
             self.salt = random.randint(0, 99999999)
 
-        print(iters, self.salt)
+        print('Iters:', iters,'SALT:', self.salt, 'SEED:', self.SEED, self.PASSWORD)
 
         if self.sock and self.salt:
             self.initialized = True
@@ -99,6 +104,15 @@ class Client():
         print(self.salt)
         self.salt += 1
 
+    def breaks(self):
+        if not self.SEED or not self.PASSWORD:
+            return
+        if not self.initialized:
+            self.initialize_connection()
+
+        command = 'B000'
+
+        self.hash_and_send(command)
 
 
 app = Flask(__name__)
@@ -109,6 +123,7 @@ my_client = Client()
 
 @app.route('/')
 def index():
+    my_client.reset()
     return render_template('index.html')
 
 @app.route('/left')
@@ -135,10 +150,17 @@ def down():
     my_client.down()
     return '200'
 
+@app.route('/breaks')
+def breaks():
+    print('brekas')
+    my_client.breaks()
+    return '200'
+
+
 @app.route('/seed/<seed>')
 def get_seed( seed):
     if seed:
-        my_client.SEED = seed
+        my_client.SEED = int(seed)
         return '200'
     return '204'
 
