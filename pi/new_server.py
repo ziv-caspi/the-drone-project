@@ -147,15 +147,18 @@ class Server():
             print(error, self.client_addrs)
 
     def recv_command(self):
-        hash_len = int(self.client_socket.recv(2).decode())
-        sent_hash = self.client_socket.recv(hash_len)
-        self.current_salt += 1
-        for command in self.COMMANDS:
-            if self.compute_hash(command) == sent_hash:
-                self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
-                print('AUTH COMMAND Received:', command)
-                return command, sent_hash
-        return None, sent_hash
+        try:
+            hash_len = int(self.client_socket.recv(2).decode())
+            sent_hash = self.client_socket.recv(hash_len)
+            self.current_salt += 1
+            for command in self.COMMANDS:
+                if self.compute_hash(command) == sent_hash:
+                    self.usage_analysis.request_received(self.client_addrs[0], sent_hash, command)
+                    print('AUTH COMMAND Received:', command)
+                    return command, sent_hash
+            return None, sent_hash
+        except (ValueError, socket.error) as e:
+            raise ConnectionAbortedError
 
     def handle_commands(self):
         try:
