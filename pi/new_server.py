@@ -164,6 +164,7 @@ class Server():
     def handle_commands(self):
         try:
             command, sent_hash = self.recv_command()
+            self.current_salt += 1
             if command:
                 try:
                     self.execute_command(command)
@@ -181,7 +182,6 @@ class Server():
         string = self.PASSWORD + str(self.current_salt) + COMMAND
         m = hashlib.sha256()
         m.update(string.encode())
-        self.current_salt += 1
         return m.digest()
 
     def execute_command(self, command):
@@ -202,6 +202,7 @@ class Server():
     def auth_msg(self):
         print('Waiting On Auth Message...')
         command, sent_hash = self.recv_command()
+        self.current_salt += 1
         print('command:', command)
         if command:
             self.client_socket.settimeout(None)
@@ -209,6 +210,7 @@ class Server():
             return
 
         raise ConnectionAbortedError
+
 
 
 if __name__ == '__main__':
