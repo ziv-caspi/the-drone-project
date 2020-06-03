@@ -72,7 +72,7 @@ class Server():
         while True:
             try:
                 self.client_socket, self.client_addrs = self.server_socket.accept()
-                self.client_addrs.settimeout(self.TIMEOUT)
+                self.client_socket.settimeout(self.TIMEOUT)
                 try:
                     print(self.client_addrs)
                     self.new_connection()
@@ -213,4 +213,4 @@ if __name__ == '__main__':
             server.start()
         except Exception as e:
             print(f"Attempt {start_attempt+1}/3 has failed")
-            print(e)
+            print(e.with_traceback())
