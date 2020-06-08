@@ -19,12 +19,12 @@ class Streamer():
             self.vs = VideoStream(src=0).start()
             self.streaming_loop()
 
-        except socket.timeout:
-            print('Socket Time Out Exceeded, Closing Streaming Connection')
+        except socket.timeout as e:
+            print('Socket Time Out Exceeded, Closing Streaming Connection', e)
             self.client_addrs = None
 
-        except socket.error:
-            print('Lost Streaming Connection.')
+        except socket.error as e:
+            print('Lost Streaming Connection.', e)
             self.client_addrs = None
 
     def stop_streaming_to_client(self):
