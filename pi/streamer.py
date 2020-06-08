@@ -35,5 +35,10 @@ class Streamer():
             frame = self.vs.read()
             frame = resize(frame, width=320)
             frame = frame.tobytes()
-            self.client_socket.sendto(str(len(frame)).encode(), self.client_addrs)
-            self.client_socket.sendto(frame, self.client_addrs)
+            frames = self.split_frame(frame)
+            for frame in frames:
+                self.client_socket.sendto(str(len(frame)).encode(), self.client_addrs)
+                self.client_socket.sendto(frame, self.client_addrs)
+
+    def split_frame(self, frame):
+        return [frame[i: i+ 500] for i in range(0, len(frame), 2)]
