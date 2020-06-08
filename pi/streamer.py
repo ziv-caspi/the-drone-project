@@ -20,13 +20,16 @@ class Streamer():
             self.client_socket.connect(client_addrs)
             self.vs = VideoStream(src=0).start()
             self.streaming_loop()
+
         except socket.timeout:
             print('Socket Time Out Exceeded, Closing Streaming Connection')
             self.client_socket.close()
+            self.client_addrs = None
+
         except socket.error:
             print('Lost Streaming Connection.')
             self.client_socket.close()
-
+            self.client_addrs = None
 
     def stop_streaming_to_client(self):
         self.client_socket.close()
@@ -37,5 +40,5 @@ class Streamer():
             frame = self.vs.read()
             frame = resize(frame, width=320)
             frame = frame.tobytes()
-            self.client_socket.send(str(len(frame)))
+            self.client_socket.send(str(len(frame)).encode())
             self.client_socket.send(frame)
