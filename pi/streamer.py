@@ -41,4 +41,4 @@ class Streamer():
                 self.client_socket.sendto(frame, self.client_addrs)
 
     def split_frame(self, frame):
-        return [frame[i: i+ 300] for i in range(0, len(frame), 2)]
+        return [frame[i: i+ 500] for i in range(0, len(frame), 2)]
