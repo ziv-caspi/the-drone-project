@@ -1,0 +1,69 @@
+@font-face {
+    font-family: trail;
+    src: url(TempestApache3D-EnYg.otf);
+    font-weight: bold;
+}
+
+@keyframes rotate fromUPtoLeft {
+    0% {
+        transform-origin: left bottom;
+        transform: rotate(-90deg);
+    }
+    100% {
+        transform-origin: left bottom
+        transform: rotate(0)
+    }
+}
+
+body {
+    background: url(Images/2I93.gif);
+}
+h1 {
+    /* The Drone Project */
+
+    width: 700px;
+    height: 151px;
+    left: 347px;
+    top: 0px;
+
+    font-family: trail;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 64px;
+    line-height: 79px;
+    text-align: center;
+
+    color: #ffffff;
+}
+
+.center {
+    float: none; margin: 0 auto;
+}
+#car {
+
+    width: 411.95px;
+    height: 202.04px;
+    left: 596.29px;
+    top: 736.09px;
+
+    /* background: url(Clipart-Email-5081921.png); */
+    border-radius: 69px;
+    transform: rotate(-90deg);
+}
+.top-margin {
+    margin-top: 50px;
+}
+.bottom-margin {
+    margin-bottom: 80px;
+}
+
+#front_indicator {
+    position: relative;
+    opacity: 0;
+}
+
+#back_indicator {
+    position: relative;
+    transform: rotate(180deg);
+    opacity: 0;
+}
