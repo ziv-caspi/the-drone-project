@@ -1,3 +1,0 @@
-[submodule "pi/imagezmq"]
-	path = pi/imagezmq
-	url = https://github.com/caspifx/imagezmq.git
