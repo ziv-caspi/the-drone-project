@@ -108,8 +108,8 @@ function main() {
     var front_indicator = document.getElementById('front_indicator');
     var back_indicator = document.getElementById('back_indicator');
     var isForward = true;
-    get_seed()
-    get_pass()
+    // get_seed()
+    // get_pass()
 }
 
 main()

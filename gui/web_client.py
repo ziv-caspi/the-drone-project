@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import socket
 import random
 import hashlib
+import webbrowser
 
 SPEED = '99'
 ANGLE = '99'
@@ -130,6 +131,17 @@ def index():
     my_client.reset()
     return render_template('index.html')
 
+@app.route('/login')
+def login():
+    my_client.reset()
+    if request.args.get('seed') and request.args.get('password'):
+        my_client.SEED = int(request.args.get('seed'))
+        my_client.PASSWORD = request.args.get('password')
+        print(my_client.SEED, my_client.PASSWORD)
+        return render_template('index.html')
+
+    return render_template('login.html')
+    
 @app.route('/left')
 def left():
     print('left')
@@ -177,4 +189,5 @@ def get_password(password):
 
 
 if __name__ == '__main__':
-    app.run()
+    webbrowser.open('http://localhost:5000/login')
+    app.run(debug=True)
