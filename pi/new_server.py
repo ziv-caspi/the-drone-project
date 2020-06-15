@@ -24,6 +24,7 @@ class Server():
         :param TIMEOUT: max seconds until first command required
         :type TIMEOUT: int
         """
+        self.server_is_up = True
         self.TIMEOUT = TIMEOUT
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # the servers socket object
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -46,13 +47,13 @@ class Server():
         try:
 
             with open(self.reps_file_path, 'r') as f:
-                self.randoms_used = int(f.read())
-            iters = self.randoms_used
+                self.times_used_random = int(f.read())
+            iters = self.times_used_random
 
-            if self.randoms_used >= self.REPS_LIMIT:
+            if self.times_used_random >= self.REPS_LIMIT:
                 print('MAX REPS EXCEEDED.')
                 random.seed(SALT_SEED ** 2)
-                iters = self.randoms_used - self.REPS_LIMIT + 1# Notice Can Cause Repetition
+                iters = self.times_used_random - self.REPS_LIMIT + 1# Notice Can Cause Repetition
                 print(iters)
 
 
@@ -63,9 +64,9 @@ class Server():
 
 
         except (FileNotFoundError, ValueError):
-            self.randoms_used = 0
+            self.times_used_random = 0
             with open(self.reps_file_path, 'w') as f:
-                f.write(str(self.randoms_used))
+                f.write(str(self.times_used_random))
             self.session_salt = None
             self.current_salt = None
 
@@ -82,6 +83,10 @@ class Server():
             1: True
         }
 
+    def accept_new_client(self):
+        self.client_socket, self.client_addrs = self.server_socket.accept()
+        self.client_socket.settimeout(self.TIMEOUT)
+
     def start(self):
         """
             starts the server, accepts client connections and handles them.
@@ -90,22 +95,25 @@ class Server():
         """
         self.init_server()
         print('Server is Up on PORT %d' % self.PORT)
-        while True:
+
+        while self.server_is_up:
             try:
-                self.client_socket, self.client_addrs = self.server_socket.accept()
-                self.client_socket.settimeout(self.TIMEOUT)
+                self.accept_new_client()
                 try:
-                    print(self.client_addrs)
+                    print(f'New Connection From {self.client_addrs}')
+
                     self.new_connection()
                     self.auth_msg()
+
                     while self.client_connected:
                         self.handle_commands()
+
                 except socket.timeout:
                     print('Connection TimeOut Exceeded. Dumping Session')
                     raise ConnectionAbortedError
 
             except socket.error as e:
-                print('Connection Aborted:', e)
+                print('Connection Aborted, Error:', e)
                 self.client_socket.close()
                 self.client_connected = False
                 self.client_addrs = None
@@ -122,19 +130,13 @@ class Server():
             this is called when a new connection is accepted.
             generates new random number to be used as this session's salt
         """
-        if self.randoms_used == self.REPS_LIMIT - 1:
-            random.seed(self.SEED ** 2)
-            print('MAX REPS EXCEEDED.', self.randoms_used)
+        self.handle_random_reps_over_limit()
 
         self.session_salt = random.randint(0, self.RANDOM_LIMIT)
-        self.randoms_used += 1
+        self.times_used_random += 1
         self.current_salt = self.session_salt
 
-        try:
-            with open(self.reps_file_path, 'w') as f:
-                f.write(str(self.randoms_used))
-        except:
-            print('Could Not Write To Reps file.')
+        self.write_current_times_used_random_to_local_file()
         print(self.current_salt)
 
 
@@ -184,8 +186,8 @@ class Server():
             #     self.bin_to_car('{0:b}'.format(self.SEED), 0.5, 0.4)
             # except:
             #     print('Error with car sequence')
-            print(self.randoms_used)
-            msg = str(len(str(self.randoms_used))).zfill(3) + str(self.randoms_used)
+            print(self.times_used_random)
+            msg = str(len(str(self.times_used_random))).zfill(3) + str(self.times_used_random)
             self.client_socket.send(msg.encode())
             self.client_connected = True
         except (ConnectionAbortedError, ConnectionResetError, ConnectionError, ConnectionRefusedError) as error:
@@ -200,11 +202,14 @@ class Server():
         try:
             hash_len = int(self.client_socket.recv(2).decode())
             sent_hash = self.client_socket.recv(hash_len)
-            for command in self.COMMANDS:
-                if self.compute_hash(command) == sent_hash:
+
+            for command in self.COMMANDS: # compute hash for every known command
+                if self.compute_hash(command) == sent_hash: # compare output to received data
                     return command, sent_hash
-            print('Excpected Salt:', self.current_salt)
+
+            print('Expected Salt:', self.current_salt)
             return None, sent_hash
+
         except (ValueError) as e:
             print('Packet Not By Protocol', e)
             raise ConnectionAbortedError
@@ -281,6 +286,17 @@ class Server():
 
         raise ConnectionAbortedError
 
+    def handle_random_reps_over_limit(self):
+        if self.times_used_random == self.REPS_LIMIT - 1:
+            random.seed(self.SEED ** 2)
+            print('MAX REPS EXCEEDED.', self.times_used_random)
+
+    def write_current_times_used_random_to_local_file(self):
+        try:
+            with open(self.reps_file_path, 'w') as f:
+                f.write(str(self.times_used_random))
+        except:
+            print('Could Not Write To Reps file.')
 
 
 if __name__ == '__main__':
